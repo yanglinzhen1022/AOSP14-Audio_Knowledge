@@ -14,15 +14,15 @@ Android音频焦点采用**栈模型**管理，最新请求者位于栈顶持有
 graph TB
     subgraph "MediaFocusControl焦点栈"
         direction TB
-        TOP["栈顶: FocusRequester(当前焦点持有者)"]
-        MID["FocusRequester(之前的焦点持有者)"]
-        BOT["FocusRequester(更早的焦点持有者)"]
+        TOP["栈顶: FocusRequester（当前焦点持有者）"]
+        MID["FocusRequester（之前的焦点持有者）"]
+        BOT["FocusRequester（更早的焦点持有者）"]
     end
-    REQ["新requestAudioFocus()"] -->|"push到栈顶"| TOP
-    TOP -->|"propagateFocusLossFromGain_syncAf()"| MID
-    MID -->|"handleFocusLossFromGain()"| BOT
-    ABN["abandonAudioFocus()"] -->|"pop出栈"| TOP
-    TOP -->|"notifyTopOfAudioFocusStack()"| MID
+    REQ["新requestAudioFocus（）"] -->|"push到栈顶"| TOP
+    TOP -->|"propagateFocusLossFromGain_syncAf（）"| MID
+    MID -->|"handleFocusLossFromGain（）"| BOT
+    ABN["abandonAudioFocus（）"] -->|"pop出栈"| TOP
+    TOP -->|"notifyTopOfAudioFocusStack（）"| MID
 ```
 
 **核心数据结构**（源码: [`MediaFocusControl.java`](frameworks/base/services/core/java/com/android/server/audio/MediaFocusControl.java)）
@@ -55,10 +55,10 @@ stateDiagram-v2
     state "持有GAIN_TRANSIENT" as TRANSIENT
     state "持有GAIN_TRANSIENT_MAY_DUCK" as DUCK
     state "持有GAIN_TRANSIENT_EXCLUSIVE" as EXCLUSIVE
-    state "失去焦点(LOSS)" as LOSS
-    state "暂时失去(LOSS_TRANSIENT)" as LT
-    state "Ducking(LOSS_TRANSIENT_CAN_DUCK)" as LTDUCK
-    state "淡出悬停(LOSS+FadeLimbo)" as FADELIMBO
+    state "失去焦点（LOSS）" as LOSS
+    state "暂时失去（LOSS_TRANSIENT）" as LT
+    state "Ducking（LOSS_TRANSIENT_CAN_DUCK）" as LTDUCK
+    state "淡出悬停（LOSS+FadeLimbo）" as FADELIMBO
 
     [*] --> NONE
     NONE --> GAIN: requestFocus(GAIN)
@@ -81,32 +81,32 @@ stateDiagram-v2
 
 ```mermaid
 flowchart TB
-    START["requestAudioFocus()"] --> PING["cb.pingBinder()<br/>验证Binder存活"]
+    START["requestAudioFocus（）"] --> PING["cb.pingBinder（）<br>验证Binder存活"]
     PING -->|"失败"| FAIL["返回REQUEST_FAILED"]
-    PING -->|"成功"| APPOPS["AppOps.noteOp()<br/>OP_TAKE_AUDIO_FOCUS权限检查"]
+    PING -->|"成功"| APPOPS["AppOps.noteOp（）<br>OP_TAKE_AUDIO_FOCUS权限检查"]
     APPOPS -->|"拒绝"| FAIL
-    APPOPS -->|"允许"| LOCK["synchronized(mAudioFocusLock)"]
-    LOCK --> STACKFULL{"mFocusStack.size() ><br/>MAX_STACK_SIZE?"}
+    APPOPS -->|"允许"| LOCK["synchronized（mAudioFocusLock）"]
+    LOCK --> STACKFULL{"mFocusStack.size（） ><br>MAX_STACK_SIZE?"}
     STACKFULL -->|"是"| FAIL
     STACKFULL -->|"否"| RINGCALL{"进入来电/通话?"}
     RINGCALL -->|"是"| SETRING["mRingOrCallActive=true"]
-    RINGCALL -->|"否"| EXTPOL{"有外部焦点策略<br/>(mFocusPolicy)?"}
+    RINGCALL -->|"否"| EXTPOL{"有外部焦点策略<br>（mFocusPolicy）?"}
     SETRING --> EXTPOL
-    EXTPOL -->|"是"| NOTIFYEXT["notifyExtFocusPolicyFocusRequest()<br/>交由外部策略处理"]
+    EXTPOL -->|"是"| NOTIFYEXT["notifyExtFocusPolicyFocusRequest（）<br>交由外部策略处理"]
     NOTIFYEXT --> WAITEXT["返回REQUEST_WAITING_FOR_EXT_POLICY"]
-    EXTPOL -->|"否"| DELAYED{"canReassignAudioFocus()?<br/>(是否有LOCK焦点)"}
+    EXTPOL -->|"否"| DELAYED{"canReassignAudioFocus（）?<br>（是否有LOCK焦点）"}
     DELAYED -->|"否+无DELAY_OK"| FAIL
-    DELAYED -->|"否+有DELAY_OK"| PUSHBELOW["pushBelowLockedFocusOwnersAndPropagate()<br/>延迟授权"]
+    DELAYED -->|"否+有DELAY_OK"| PUSHBELOW["pushBelowLockedFocusOwnersAndPropagate（）<br>延迟授权"]
     DELAYED -->|"是"| SAMECLIENT{"栈顶已有同clientId?"}
-    SAMECLIENT -->|"是+同请求"| GRANT["返回REQUEST_GRANTED(无需操作)"]
+    SAMECLIENT -->|"是+同请求"| GRANT["返回REQUEST_GRANTED（无需操作）"]
     SAMECLIENT -->|"是+不同请求"| POPOLD["pop旧条目"]
-    SAMECLIENT -->|"否"| REMOVEOLD["removeFocusStackEntry()<br/>移除栈中同clientId旧条目"]
+    SAMECLIENT -->|"否"| REMOVEOLD["removeFocusStackEntry（）<br>移除栈中同clientId旧条目"]
     POPOLD --> REMOVEOLD
-    REMOVEOLD --> MULTI{"mMultiAudioFocusEnabled<br/>&& GAIN请求?"}
-    MULTI -->|"是+非来电"| ADDMULTI["mMultiAudioFocusList.add(nfr)<br/>直接授予"]
-    MULTI -->|"否"| PROPAGATE["propagateFocusLossFromGain_syncAf()<br/>向栈中所有条目传播LOSS"]
-    PROPAGATE --> PUSH["mFocusStack.push(nfr)<br/>新请求者入栈顶"]
-    PUSH --> GAINNOTIFY["nfr.handleFocusGainFromRequest()<br/>通知获得焦点"]
+    REMOVEOLD --> MULTI{"mMultiAudioFocusEnabled<br>&& GAIN请求?"}
+    MULTI -->|"是+非来电"| ADDMULTI["mMultiAudioFocusList.add（nfr）<br>直接授予"]
+    MULTI -->|"否"| PROPAGATE["propagateFocusLossFromGain_syncAf（）<br>向栈中所有条目传播LOSS"]
+    PROPAGATE --> PUSH["mFocusStack.push（nfr）<br>新请求者入栈顶"]
+    PUSH --> GAINNOTIFY["nfr.handleFocusGainFromRequest（）<br>通知获得焦点"]
     ADDMULTI --> GAINNOTIFY
 ```
 
@@ -145,16 +145,16 @@ flowchart TB
         PAUSEFLAG -->|"否"| OLDSDK{"旧SDK<=DUCKING_IN_APP_SDK_LEVEL?"}
         OLDSDK -->|"是"| DISPATCH
         OLDSDK -->|"否"| SPEECHCHECK{"Content_Type==SPEECH?"}
-        SPEECHCHECK -->|"是"| DISPATCH["不duck语音(影响可懂度)"]
-        SPEECHCHECK -->|"否"| DUCKEXEC["duckPlayers()<br/>DuckingManager执行duck"]
+        SPEECHCHECK -->|"是"| DISPATCH["不duck语音（影响可懂度）"]
+        SPEECHCHECK -->|"否"| DUCKEXEC["duckPlayers（）<br>DuckingManager执行duck"]
     end
 
     subgraph "FadeOut执行"
         FADECHECK{"ENFORCE_FADEOUT_FOR_FOCUS_LOSS?"}
         FADECHECK -->|"否"| DISPATCH2["dispatch给App"]
-        FADECHECK -->|"是"| FADEEXEC["fadeOutPlayers()<br/>FadeOutManager执行淡出"]
-        FADEEXEC --> LIMBO["mFocusLossFadeLimbo=true<br/>进入'悬停'状态"]
-        LIMBO --> DELAYED["postDelayedLossAfterFade()<br/>延迟2s后dispatch LOSS"]
+        FADECHECK -->|"是"| FADEEXEC["fadeOutPlayers（）<br>FadeOutManager执行淡出"]
+        FADEEXEC --> LIMBO["mFocusLossFadeLimbo=true<br>进入'悬停'状态"]
+        LIMBO --> DELAYED["postDelayedLossAfterFade（）<br>延迟2s后dispatch LOSS"]
     end
 ```
 
@@ -210,7 +210,7 @@ sequenceDiagram
     AMC->>Top: notifyTopOfAudioFocusStack()
     Top->>Top: handleFocusGain(AUDIOFOCUS_GAIN)
     Top->>Top: mFocusLossReceived = NONE
-    Top->>Top: restoreVShapedPlayers()<br/>恢复被duck/fadeout的播放器
+    Top->>Top: restoreVShapedPlayers()<br>恢复被duck/fadeout的播放器
     AMC-->>App: 返回AUDIOFOCUS_REQUEST_GRANTED
 ```
 
@@ -255,15 +255,15 @@ sequenceDiagram
 
 ```mermaid
 flowchart TB
-    CALL["来电/拨号<br/>AudioMode.MODE_IN_CALL"] --> CHECK{"当前有活跃播放器?"}
+    CALL["来电/拨号<br>AudioMode.MODE_IN_CALL"] --> CHECK{"当前有活跃播放器?"}
     CHECK -->|"否"| NOTHING["无操作"]
     CHECK -->|"是"| SCAN["扫描mPlayers列表"]
-    SCAN --> FILTER["按Usage过滤:<br/>GAME/MEDIA/NOTIFICATION/SYSTEM"]
-    FILTER --> MUTE["mutePlayersForCall()"]
-    MUTE --> SETVOL["PlayerProxy.setVolume(0.0f)"]
-    SETVOL --> ACTIVE["播放器仍ACTIVE<br/>但音量为0(静音)"]
-    ACTIVE --> ENDCALL["通话结束<br/>AudioMode.MODE_NORMAL"]
-    ENDCALL --> RESTORE["restoreMutedPlayers()<br/>恢复之前音量"]
+    SCAN --> FILTER["按Usage过滤:<br>GAME/MEDIA/NOTIFICATION/SYSTEM"]
+    FILTER --> MUTE["mutePlayersForCall（）"]
+    MUTE --> SETVOL["PlayerProxy.setVolume（0.0f）"]
+    SETVOL --> ACTIVE["播放器仍ACTIVE<br>但音量为0（静音）"]
+    ACTIVE --> ENDCALL["通话结束<br>AudioMode.MODE_NORMAL"]
+    ENDCALL --> RESTORE["restoreMutedPlayers（）<br>恢复之前音量"]
 ```
 
 > **通话Muting vs Ducking**: 通话期间直接Mute到0（而非Duck到-20dB），这是设计决策——通话时其他音频完全静音，避免干扰通话质量。

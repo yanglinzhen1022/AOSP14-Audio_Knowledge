@@ -58,17 +58,17 @@ Output thread 0x7f8c1234000, name MixerThread, tid 1234
 
 ```mermaid
 flowchart TD
-    A["播放无声/异常"] --> B{"AudioTrack创建成功?<br/>getState()==STATE_INITIALIZED?"}
-    B -->|否| C["检查native_setup错误码<br/>logcat -s AudioTrack"]
-    B -->|是| D{"有活跃Track?<br/>dumpsys audio|grep Active"}
-    D -->|否| E["检查play()/start()是否调用<br/>检查CBLK_INVALID"]
-    D -->|是| F{"路由到正确设备?<br/>dumpsys audio|grep Device"}
-    F -->|否| G["检查AudioAttributes.usage<br/>检查audio_policy_configuration.xml"]
-    F -->|是| H{"音量>0?<br/>dumpsys audio|grep Volume"}
-    H -->|否| I["检查VolumeGroup/焦点duck<br/>检查Do Not Disturb"]
-    H -->|是| J{"有Underrun?<br/>dumpsys audio|grep Underrun"}
-    J -->|是| K["App写入不够快<br/>增大bufferSize<br/>检查callback频率"]
-    J -->|否| L["HAL层问题<br/>logcat -s audio_hw<br/>检查HAL实现"]
+    A["播放无声/异常"] --> B{"AudioTrack创建成功?<br>getState（）==STATE_INITIALIZED?"}
+    B -->|否| C["检查native_setup错误码<br>logcat -s AudioTrack"]
+    B -->|是| D{"有活跃Track?<br>dumpsys audio|grep Active"}
+    D -->|否| E["检查play（）/start（）是否调用<br>检查CBLK_INVALID"]
+    D -->|是| F{"路由到正确设备?<br>dumpsys audio|grep Device"}
+    F -->|否| G["检查AudioAttributes.usage<br>检查audio_policy_configuration.xml"]
+    F -->|是| H{"音量>0?<br>dumpsys audio|grep Volume"}
+    H -->|否| I["检查VolumeGroup/焦点duck<br>检查Do Not Disturb"]
+    H -->|是| J{"有Underrun?<br>dumpsys audio|grep Underrun"}
+    J -->|是| K["App写入不够快<br>增大bufferSize<br>检查callback频率"]
+    J -->|否| L["HAL层问题<br>logcat -s audio_hw<br>检查HAL实现"]
 ```
 
 ### AudioFlinger Track dump关键字段解读

@@ -42,8 +42,8 @@ graph TB
     CAS --> ParseXml["解析car_audio_configuration.xml"]
     ParseXml --> BuildZone["构建CarAudioZone列表"]
     BuildZone --> BuildVG["构建CarVolumeGroup列表"]
-    BuildVG --> SetupFocus["设置AudioFocusPolicy(CarAudioFocus)"]
-    SetupFocus --> SetupACW["创建AudioControlWrapper(AIDL/HIDL)"]
+    BuildVG --> SetupFocus["设置AudioFocusPolicy（CarAudioFocus）"]
+    SetupFocus --> SetupACW["创建AudioControlWrapper（AIDL/HIDL）"]
     SetupACW --> Register["注册AudioPolicy到MediaFocusControl"]
 ```
 
@@ -80,16 +80,16 @@ CarAudioZone将车内音频设备划分为独立的Zone，每个Zone有独立的
 
 ```mermaid
 graph TB
-    subgraph PrimaryZone["主Zone (zoneId=0)"]
+    subgraph PrimaryZone["主Zone （zoneId=0）"]
         PVG1["VolumeGroup: Media → Bus0"]
         PVG2["VolumeGroup: Nav → Bus1"]
         PVG3["VolumeGroup: Call → Bus2"]
-        PFocus["CarAudioFocus(主Zone)"]
+        PFocus["CarAudioFocus（主Zone）"]
     end
-    subgraph RearZone["后排Zone (zoneId=1)"]
+    subgraph RearZone["后排Zone （zoneId=1）"]
         RVG1["VolumeGroup: Media → Bus3"]
         RVG2["VolumeGroup: Entertainment → Bus4"]
-        RFocus["CarAudioFocus(后排Zone)"]
+        RFocus["CarAudioFocus（后排Zone）"]
     end
     CarSvc["CarAudioService"] --> PrimaryZone
     CarSvc --> RearZone
@@ -120,10 +120,10 @@ graph TB
 
 ```mermaid
 graph TB
-    Request["焦点请求(AUDIO_CONTEXT)"] --> Matrix["INTERACTION_MATRIX"]
-    Matrix -->|"INTERACTION_REJECT"| Reject["拒绝(如NAV在CALL期间)"]
-    Matrix -->|"INTERACTION_EXCLUSIVE"| Exclusive["独占(如EMERGENCY)"]
-    Matrix -->|"INTERACTION_CONCURRENT"| Concurrent["并发(如MUSIC+NAV)"]
+    Request["焦点请求（AUDIO_CONTEXT）"] --> Matrix["INTERACTION_MATRIX"]
+    Matrix -->|"INTERACTION_REJECT"| Reject["拒绝（如NAV在CALL期间）"]
+    Matrix -->|"INTERACTION_EXCLUSIVE"| Exclusive["独占（如EMERGENCY）"]
+    Matrix -->|"INTERACTION_CONCURRENT"| Concurrent["并发（如MUSIC+NAV）"]
 ```
 
 | 交互结果 | 说明 | 对当前持有者的影响 |
@@ -211,18 +211,18 @@ sequenceDiagram
 ```mermaid
 graph LR
     subgraph "App层"
-        AT["AudioTrack<br/>AudioAttributes.usage=MEDIA"]
+        AT["AudioTrack<br>AudioAttributes.usage=MEDIA"]
     end
     subgraph "CarAudioService"
-        CAC["CarAudioContext<br/>MUSIC=1"]
-        CVG["CarVolumeGroup<br/>group=0: Media"]
-        CAZ["CarAudioZone<br/>zone=0: Primary"]
+        CAC["CarAudioContext<br>MUSIC=1"]
+        CVG["CarVolumeGroup<br>group=0: Media"]
+        CAZ["CarAudioZone<br>zone=0: Primary"]
     end
     subgraph "AudioPolicyManager"
-        APM["getOutputForAttr()<br/>路由到Bus0设备"]
+        APM["getOutputForAttr（）<br>路由到Bus0设备"]
     end
     subgraph "Audio HAL"
-        HAL["StreamOut<br/>address=bus0_media_out"]
+        HAL["StreamOut<br>address=bus0_media_out"]
     end
     
     AT --> CAC --> CVG --> CAZ --> APM --> HAL
@@ -321,26 +321,26 @@ sequenceDiagram
 ```mermaid
 flowchart TB
     subgraph "焦点请求"
-        REQ["requestAudioFocus()"] --> MFC["MediaFocusControl"]
-        MFC --> PROP["propagateFocusLossFromGain_syncAf()"]
+        REQ["requestAudioFocus（）"] --> MFC["MediaFocusControl"]
+        MFC --> PROP["propagateFocusLossFromGain_syncAf（）"]
     end
 
-    subgraph "第一层: 框架主动执行(AOSP14新增)"
+    subgraph "第一层: 框架主动执行（AOSP14新增）"
         PROP --> DUCKCHECK{"Loss类型判断"}
-        DUCKCHECK -->|"LOSS_TRANSIENT_CAN_DUCK"| DUCKEXEC["PlaybackActivityMonitor<br/>duckPlayers()"]
-        DUCKCHECK -->|"LOSS"| FADEEXEC["FadeOutManager<br/>fadeOutPlayers()"]
+        DUCKCHECK -->|"LOSS_TRANSIENT_CAN_DUCK"| DUCKEXEC["PlaybackActivityMonitor<br>duckPlayers（）"]
+        DUCKCHECK -->|"LOSS"| FADEEXEC["FadeOutManager<br>fadeOutPlayers（）"]
     end
 
     subgraph "第二层: App回调通知"
-        PROP --> DISPATCH["FocusRequester.handleFocusLoss()"]
-        DISPATCH --> IPC["IAudioFocusDispatcher<br/>dispatchAudioFocusChange()"]
-        IPC --> APPCB["App.onAudioFocusChange()"]
+        PROP --> DISPATCH["FocusRequester.handleFocusLoss（）"]
+        DISPATCH --> IPC["IAudioFocusDispatcher<br>dispatchAudioFocusChange（）"]
+        IPC --> APPCB["App.onAudioFocusChange（）"]
     end
 
-    subgraph "第三层: AAOS路径(车载)"
-        PROP --> EXTPOL["mFocusPolicy(外部策略)"]
-        EXTPOL --> ACPOL["AudioControl HAL<br/>CarAudioPolicy"]
-        ACPOL --> DSP["DSP执行Ducking/Muting<br/>硬件级执行"]
+    subgraph "第三层: AAOS路径（车载）"
+        PROP --> EXTPOL["mFocusPolicy（外部策略）"]
+        EXTPOL --> ACPOL["AudioControl HAL<br>CarAudioPolicy"]
+        ACPOL --> DSP["DSP执行Ducking/Muting<br>硬件级执行"]
     end
 ```
 

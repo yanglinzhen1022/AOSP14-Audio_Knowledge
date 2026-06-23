@@ -81,14 +81,14 @@ classDiagram
 
 ```mermaid
 graph TB
-    Start["threadLoop() 开始"] --> Sleep["sleepWait_l() 等待唤醒"]
+    Start["threadLoop（） 开始"] --> Sleep["sleepWait_l（） 等待唤醒"]
     Sleep --> Check["检查活跃Track列表"]
-    Check -->|"有活跃Track"| Prepare["prepareTracks_l()"]
+    Check -->|"有活跃Track"| Prepare["prepareTracks_l（）"]
     Check -->|"无活跃Track"| Sleep
-    Prepare -->|"Track就绪"| Mix["threadLoop_mix() 混音"]
+    Prepare -->|"Track就绪"| Mix["threadLoop_mix（） 混音"]
     Prepare -->|"Track未就绪"| Sleep
-    Mix --> Effect["EffectChain.process_l()"]
-    Effect --> Write["threadLoop_write() → HAL"]
+    Mix --> Effect["EffectChain.process_l（）"]
+    Effect --> Write["threadLoop_write（） → HAL"]
     Write --> Update["更新cblk.server位置"]
     Update --> Sleep
 ```
@@ -107,33 +107,33 @@ graph TB
 
 ```mermaid
 flowchart TD
-    A["threadLoop() 入口"] --> B["cacheParameters_l()<br/>缓存采样率/frameCount等"]
-    B --> C["acquireWakeLock()"]
-    C --> D["checkSilentMode_l()"]
-    D --> E{"主循环 for(;;)"}
+    A["threadLoop（） 入口"] --> B["cacheParameters_l（）<br>缓存采样率/frameCount等"]
+    B --> C["acquireWakeLock（）"]
+    C --> D["checkSilentMode_l（）"]
+    D --> E{"主循环 for（;;）"}
     
-    E --> F["processConfigEvents_l()<br/>处理配置变更事件"]
-    F --> G["collectTimestamps_l()"]
+    E --> F["processConfigEvents_l（）<br>处理配置变更事件"]
+    F --> G["collectTimestamps_l（）"]
     G --> H{"有SignalPending?"}
     H -->|是| I["清除信号标志"]
-    H -->|否, 等待异步回调| J["computeWaitTimeNs_l()"]
-    J --> K["mWaitWorkCV.waitRelative()"]
+    H -->|否, 等待异步回调| J["computeWaitTimeNs_l（）"]
+    J --> K["mWaitWorkCV.waitRelative（）"]
     K --> L{"mActiveTracks空 且 超时?"}
-    L -->|是| M["threadLoop_standby()"]
-    M --> N["mWaitWorkCV.wait() 长休眠"]
+    L -->|是| M["threadLoop_standby（）"]
+    M --> N["mWaitWorkCV.wait（） 长休眠"]
     N --> E
     
-    L -->|否| O["prepareTracks_l()"]
+    L -->|否| O["prepareTracks_l（）"]
     O --> P{"mMixerStatus?"}
-    P -->|MIXER_TRACKS_READY| Q["threadLoop_mix()"]
-    P -->|MIXER_IDLE| R["threadLoop_sleepTime()"]
-    Q --> S["EffectChain.process_l()"]
+    P -->|MIXER_TRACKS_READY| Q["threadLoop_mix（）"]
+    P -->|MIXER_IDLE| R["threadLoop_sleepTime（）"]
+    Q --> S["EffectChain.process_l（）"]
     R --> T{"mSleepTimeUs==0?"}
-    T -->|是| U["填充0到sink buffer<br/>记录underrun"]
+    T -->|是| U["填充0到sink buffer<br>记录underrun"]
     T -->|否| V["继续sleep"]
     S --> W["mono_blend + balance处理"]
     U --> W
-    W --> X["threadLoop_write() → HAL"]
+    W --> X["threadLoop_write（） → HAL"]
     X --> Y["更新mBytesWritten/mFramesWritten"]
     Y --> E
 ```
@@ -213,14 +213,14 @@ sequenceDiagram
     AF->>AF: UID/PID校验(防冒用)
     AF->>AF: sessionId分配
     AF->>APM: getOutputForAttr(attr, config, flags)
-    APM->>APM: 根据usage选择输出设备<br/>选择/复用PlaybackThread<br/>FAST flag兼容性检查
+    APM->>APM: 根据usage选择输出设备<br>选择/复用PlaybackThread<br>FAST flag兼容性检查
     APM-->>AF: outputId, streamType, portId, selectedDeviceId
     AF->>AF: checkPlaybackThread_l(outputId)
     AF->>AF: registerPid(clientPid) → Client对象
     AF->>Thread: createTrack_l(client, attr, ...)
-    Thread->>Thread: 分配共享内存(cblk+buffer)<br/>创建Track对象<br/>检查FAST flag可行性<br/>调整frameCount/notificationFrames
+    Thread->>Thread: 分配共享内存(cblk+buffer)<br>创建Track对象<br>检查FAST flag可行性<br>调整frameCount/notificationFrames
     Thread-->>AF: sp<Track>
-    AF->>AF: updateSecondaryOutputsForTrack_l()<br/>移动EffectChain到新Thread
+    AF->>AF: updateSecondaryOutputsForTrack_l()<br>移动EffectChain到新Thread
     AF->>AF: 处理mPendingSyncEvents
     AF-->>Client: TrackHandle(IAudioTrack) + cblk + buffers
 ```
@@ -480,18 +480,18 @@ classDiagram
 flowchart TB
     subgraph "MixerThread内部双路径"
         TRACKS["mActiveTracks"] --> FASTCHECK{"Track有FLAG_FAST?"}
-        FASTCHECK -->|"是"| FASTPATH["FastMixer路径<br/>SCHED_FIFO优先级"]
-        FASTCHECK -->|"否"| NORMALPATH["NormalMixer路径<br/>SCHED_OTHER优先级"]
+        FASTCHECK -->|"是"| FASTPATH["FastMixer路径<br>SCHED_FIFO优先级"]
+        FASTCHECK -->|"否"| NORMALPATH["NormalMixer路径<br>SCHED_OTHER优先级"]
 
-        subgraph "FastMixer路径(~10ms延迟)"
-            FASTPATH --> FASTCMD["mCommandQueue写入<br/>FastMixer命令"]
-            FASTCMD --> FASTMIX["FastMixer混音<br/>OBTAIN模式"]
-            FASTMIX --> FASTSINK["mNormalSink<br/>NBAIO_Sink写入HAL"]
+        subgraph "FastMixer路径（~10ms延迟）"
+            FASTPATH --> FASTCMD["mCommandQueue写入<br>FastMixer命令"]
+            FASTCMD --> FASTMIX["FastMixer混音<br>OBTAIN模式"]
+            FASTMIX --> FASTSINK["mNormalSink<br>NBAIO_Sink写入HAL"]
         end
 
-        subgraph "NormalMixer路径(~40ms延迟)"
-            NORMALPATH --> NMIX["AudioMixer混音<br/>SCHED_OTHER线程"]
-            NMIX --> NWRITE["threadLoop_write()<br/>写入HAL mSinkBuffer"]
+        subgraph "NormalMixer路径（~40ms延迟）"
+            NORMALPATH --> NMIX["AudioMixer混音<br>SCHED_OTHER线程"]
+            NMIX --> NWRITE["threadLoop_write（）<br>写入HAL mSinkBuffer"]
         end
     end
 ```
@@ -524,23 +524,23 @@ flowchart TB
 
 ```mermaid
 flowchart TB
-    ATTR["AudioTrack.Builder<br/>setPerformanceMode/Flag"] --> PM{"PerformanceMode?"}
+    ATTR["AudioTrack.Builder<br>setPerformanceMode/Flag"] --> PM{"PerformanceMode?"}
 
-    PM -->|"LOW_LATENCY"| FASTFLAG["FLAG_FAST(0x4)"]
-    PM -->|"POWER_SAVING"| DEEPFLAG["FLAG_DEEP_BUFFER(0x8)"]
+    PM -->|"LOW_LATENCY"| FASTFLAG["FLAG_FAST（0x4）"]
+    PM -->|"POWER_SAVING"| DEEPFLAG["FLAG_DEEP_BUFFER（0x8）"]
     PM -->|"NONE"| TRANSFER{"TransferMode?"}
     TRANSFER -->|"TRANSFER_CALLBACK/SYNC"| MAYBEFAST["可能获得FAST"]
     TRANSFER -->|"TRANSFER_SHARED"| NORMALTRACK["NormalMixer Track"]
 
-    FASTFLAG --> FASTCHECK2{"AF.createTrack_l()<br/>FAST资格检查"}
-    FASTCHECK2 -->|"通过"| FASTTRACK["FastMixer Track<br/>SCHED_FIFO"]
-    FASTCHECK2 -->|"被拒(BAD_TYPE)"| FALLBACK2["降级到NormalMixer Track"]
+    FASTFLAG --> FASTCHECK2{"AF.createTrack_l（）<br>FAST资格检查"}
+    FASTCHECK2 -->|"通过"| FASTTRACK["FastMixer Track<br>SCHED_FIFO"]
+    FASTCHECK2 -->|"被拒（BAD_TYPE）"| FALLBACK2["降级到NormalMixer Track"]
 
-    DEEPFLAG --> DEEPBUF["DeepBuffer Track<br/>更大缓冲区"]
+    DEEPFLAG --> DEEPBUF["DeepBuffer Track<br>更大缓冲区"]
 
     subgraph "Offload路径"
-        OFFLOADCHECK{"isOffloadSupported()?"}
-        OFFLOADCHECK -->|"格式支持"| OFFLOAD["OffloadThread Track<br/>DSP解码"]
+        OFFLOADCHECK{"isOffloadSupported（）?"}
+        OFFLOADCHECK -->|"格式支持"| OFFLOAD["OffloadThread Track<br>DSP解码"]
         OFFLOADCHECK -->|"不支持"| DIRECTORMIX["Direct或Mixer路径"]
     end
 
@@ -571,10 +571,10 @@ sequenceDiagram
     participant HAL as StreamOutHal
 
     App->>AT_J: new AudioTrack.Builder()...build()
-    Note over AT_J: 1. PerformanceMode→Flags映射<br/>2. Offload兼容性检查<br/>3. bufferSize计算
+    Note over AT_J: 1. PerformanceMode→Flags映射<br>2. Offload兼容性检查<br>3. bufferSize计算
     AT_J->>JNI: native_setup(...)
     JNI->>AT_N: AudioTrack::set(...)
-    Note over AT_N: 1. Transfer Type决策<br/>2. FAST flag资格检查
+    Note over AT_N: 1. Transfer Type决策<br>2. FAST flag资格检查
     AT_N->>AT_N: createTrack_l()
     AT_N->>AF: IAudioFlinger.createTrack() [Binder]
     
@@ -719,15 +719,15 @@ classDiagram
 
 ```mermaid
 flowchart TB
-    PREPARE["prepareTracks_l()"] --> CHECK_ACTIVE{"有活跃Track?"}
-    CHECK_ACTIVE -->|"否"| IDLE["mHook = process_NoOp<br/>静音输出"]
+    PREPARE["prepareTracks_l（）"] --> CHECK_ACTIVE{"有活跃Track?"}
+    CHECK_ACTIVE -->|"否"| IDLE["mHook = process_NoOp<br>静音输出"]
     CHECK_ACTIVE -->|"1个Track"| SINGLE{"Track需要音量调节?"}
-    CHECK_ACTIVE -->|"多个Track"| MULTI["process__genericNoResampling<br/>或process__genericResampling"]
-    SINGLE -->|"不需要"| COPY["process__OneTrackCopy<br/>直接拷贝(零处理)"]
-    SINGLE -->|"需要"| VOL["process__OneTrack16BitStereo<br/>音量乘法"]
+    CHECK_ACTIVE -->|"多个Track"| MULTI["process__genericNoResampling<br>或process__genericResampling"]
+    SINGLE -->|"不需要"| COPY["process__OneTrackCopy<br>直接拷贝（零处理）"]
+    SINGLE -->|"需要"| VOL["process__OneTrack16BitStereo<br>音量乘法"]
     MULTI --> RESAMPLE_CHECK{"需要重采样?"}
     RESAMPLE_CHECK -->|"否"| NO_RESAMPLE["逐Track: volume乘法→累加"]
-    RESAMPLE_CHECK -->|"是"| RESAMPLE["逐Track: Resampler.process()→volume乘法→累加"]
+    RESAMPLE_CHECK -->|"是"| RESAMPLE["逐Track: Resampler.process（）→volume乘法→累加"]
 ```
 
 **Hook机制**: AudioMixer使用函数指针Hook动态选择处理路径，避免每次混音都做条件判断。`setParameter()`时根据Track参数更新Hook指向最优实现。

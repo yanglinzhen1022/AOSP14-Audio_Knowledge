@@ -45,34 +45,34 @@ classDiagram
 
 ```mermaid
 flowchart TB
-    START["getOutputForAttrInt()"] --> ATTR["1.getAudioAttributes()<br/>解析AudioAttributes<br/>(usage+contentType+flags)"]
-    ATTR --> STREAM["2.mEngine->getStreamTypeForAttributes()<br/>获取StreamType"]
-    STREAM --> POLICYMIX["3.mPolicyMixes.getOutputForAttr()<br/>检查动态策略(DynamicPolicy)"]
+    START["getOutputForAttrInt（）"] --> ATTR["1.getAudioAttributes（）<br>解析AudioAttributes<br>（usage+contentType+flags）"]
+    ATTR --> STREAM["2.mEngine->getStreamTypeForAttributes（）<br>获取StreamType"]
+    STREAM --> POLICYMIX["3.mPolicyMixes.getOutputForAttr（）<br>检查动态策略（DynamicPolicy）"]
     POLICYMIX --> HASMIX{"找到PolicyMix?"}
-    HASMIX -->|"是+RENDER策略"| DIRECTOUT["openDirectOutput()<br/>独占输出(如投影/录制)"]
+    HASMIX -->|"是+RENDER策略"| DIRECTOUT["openDirectOutput（）<br>独占输出（如投影/录制）"]
     HASMIX -->|"是+USE_PRIMARY"| MIXOUTPUT["使用PolicyMix关联的输出"]
-    HASMIX -->|"否"| ENGINE["4.mEngine->getOutputDevicesForAttributes()<br/>Engine路由决策"]
+    HASMIX -->|"否"| ENGINE["4.mEngine->getOutputDevicesForAttributes（）<br>Engine路由决策"]
     DIRECTOUT --> RETURN["返回output+selectedDeviceId"]
     MIXOUTPUT --> RETURN
 
-    ENGINE --> DEVICES["5.获得outputDevices<br/>(目标设备列表)"]
+    ENGINE --> DEVICES["5.获得outputDevices<br>（目标设备列表）"]
     DEVICES --> HWAVSYNC{"HW_AV_SYNC标志?"}
     HWAVSYNC -->|"是"| ADDFLAG["添加HW_AV_SYNC flag"]
     HWAVSYNC -->|"否"| MSD{"有MSD设备?"}
     ADDFLAG --> MSD
 
-    MSD -->|"是"| MSDOUT["getOutputForDevices(msdDevices)<br/>尝试MSD路径"]
-    MSD -->|"否"| NORMAL["getOutputForDevices(outputDevices)<br/>普通路径"]
+    MSD -->|"是"| MSDOUT["getOutputForDevices（msdDevices）<br>尝试MSD路径"]
+    MSD -->|"否"| NORMAL["getOutputForDevices（outputDevices）<br>普通路径"]
     MSDOUT --> MSDOK{"MSD成功?"}
     MSDOK -->|"是"| RETURN
     MSDOK -->|"否"| NORMAL
 
-    NORMAL --> PREFERRED{"有PreferredMixer<br/>Attributes?"}
-    PREFERRED -->|"是"| PREFOUT["使用PreferredMixer配置<br/>(BitPerfect场景)"]
-    PREFERRED -->|"否"| GETOUT["getOutputForDevices()"]
+    NORMAL --> PREFERRED{"有PreferredMixer<br>Attributes?"}
+    PREFERRED -->|"是"| PREFOUT["使用PreferredMixer配置<br>（BitPerfect场景）"]
+    PREFERRED -->|"否"| GETOUT["getOutputForDevices（）"]
     PREFOUT --> GETOUT
     GETOUT --> FOUNDD{"找到输出?"}
-    FOUNDD -->|"否"| FAIL["返回INVALID_OPERATION<br/>降级采样率/格式重试"]
+    FOUNDD -->|"否"| FAIL["返回INVALID_OPERATION<br>降级采样率/格式重试"]
     FOUNDD -->|"是"| RETURN
 ```
 
@@ -127,19 +127,19 @@ ProductStrategy将AudioAttributes映射到路由策略。定义在`audio_policy_
 ```mermaid
 flowchart TB
     subgraph "AudioAttributes → ProductStrategy映射"
-        ATTR1["usage=MEDIA<br/>contentType=MOVIE"] --> PS0["strategy_media<br/>(id=0)"]
-        ATTR2["usage=VOICE_COMMUNICATION<br/>contentType=SPEECH"] --> PS1["strategy_phone<br/>(id=1)"]
-        ATTR3["usage=ASSISTANCE_NAVIGATION<br/>contentType=SONIFICATION"] --> PS2["strategy_navigation<br/>(id=2)"]
-        ATTR4["usage=NOTIFICATION<br/>contentType=SONIFICATION"] --> PS3["strategy_notification<br/>(id=3)"]
-        ATTR5["usage=EMERGENCY<br/>contentType=SONIFICATION"] --> PS4["strategy_emergency<br/>(id=4)"]
-        ATTR6["usage=SAFETY<br/>contentType=SONIFICATION"] --> PS5["strategy_safety<br/>(id=5)"]
+        ATTR1["usage=MEDIA<br>contentType=MOVIE"] --> PS0["strategy_media<br>（id=0）"]
+        ATTR2["usage=VOICE_COMMUNICATION<br>contentType=SPEECH"] --> PS1["strategy_phone<br>（id=1）"]
+        ATTR3["usage=ASSISTANCE_NAVIGATION<br>contentType=SONIFICATION"] --> PS2["strategy_navigation<br>（id=2）"]
+        ATTR4["usage=NOTIFICATION<br>contentType=SONIFICATION"] --> PS3["strategy_notification<br>（id=3）"]
+        ATTR5["usage=EMERGENCY<br>contentType=SONIFICATION"] --> PS4["strategy_emergency<br>（id=4）"]
+        ATTR6["usage=SAFETY<br>contentType=SONIFICATION"] --> PS5["strategy_safety<br>（id=5）"]
     end
     subgraph "策略→设备路由"
         PS0 -->|"默认"| SPEAKER["Speaker"]
         PS0 -->|"A2DP可用"| BT["BT_A2DP"]
         PS0 -->|"有线可用"| WIRED["WiredHeadset"]
         PS2 -->|"导航优先"| CURRENT["当前活跃设备"]
-        PS4 -->|"紧急→强制"| SPEAKER2["Speaker(最大音量)"]
+        PS4 -->|"紧急→强制"| SPEAKER2["Speaker（最大音量）"]
     end
 ```
 
@@ -164,12 +164,12 @@ VolumeGroup将AudioAttributes映射到音量组，定义在`audio_policy_engine_
 ```mermaid
 graph TB
     subgraph "VolumeGroup映射"
-        VG_MEDIA["VolumeGroup: media<br/>(音量曲线0-150)"]
-        VG_VOICE["VolumeGroup: voice_call<br/>(音量曲线0-100)"]
-        VG_RING["VolumeGroup: ring<br/>(音量曲线0-100)"]
-        VG_NOTIF["VolumeGroup: notification<br/>(音量曲线0-100)"]
-        VG_ALARM["VolumeGroup: alarm<br/>(音量曲线0-100)"]
-        VG_CALLASSIST["VolumeGroup: call_assistant<br/>(跟随media)"]
+        VG_MEDIA["VolumeGroup: media<br>（音量曲线0-150）"]
+        VG_VOICE["VolumeGroup: voice_call<br>（音量曲线0-100）"]
+        VG_RING["VolumeGroup: ring<br>（音量曲线0-100）"]
+        VG_NOTIF["VolumeGroup: notification<br>（音量曲线0-100）"]
+        VG_ALARM["VolumeGroup: alarm<br>（音量曲线0-100）"]
+        VG_CALLASSIST["VolumeGroup: call_assistant<br>（跟随media）"]
     end
 
     subgraph "AudioAttributes分配"
@@ -180,10 +180,10 @@ graph TB
         ATTR_ALARM["usage=ALARM"] --> VG_ALARM
     end
 
-    subgraph "音量曲线(per device category)"
-        CURVE1["Speaker曲线: idx→dB<br/>{0,-9600}, {33,-4800}, {66,-2400}, {100,0}"]
-        CURVE2["Headset曲线: idx→dB<br/>{0,-9600}, {25,-5400}, {50,-1800}, {100,0}"]
-        CURVE3["A2DP曲线: idx→dB<br/>{0,-9600}, {50,-3000}, {100,0}"]
+    subgraph "音量曲线（per device category）"
+        CURVE1["Speaker曲线: idx→dB<br>{0,-9600}, {33,-4800}, {66,-2400}, {100,0}"]
+        CURVE2["Headset曲线: idx→dB<br>{0,-9600}, {25,-5400}, {50,-1800}, {100,0}"]
+        CURVE3["A2DP曲线: idx→dB<br>{0,-9600}, {50,-3000}, {100,0}"]
     end
 
     VG_MEDIA --> CURVE1
@@ -289,20 +289,20 @@ sequenceDiagram
     AM->>AS: registerAudioPolicy() [Binder]
     AS->>MFC: setFocusPolicy(AudioPolicy)
     MFC->>MFC: mFocusPolicy = audioPolicy
-    Note over MFC: 之后所有焦点请求<br/>先交给外部策略处理
+    Note over MFC: 之后所有焦点请求<br>先交给外部策略处理
 ```
 
 ### 外部策略焦点请求流程
 
 ```mermaid
 flowchart TB
-    REQ["requestAudioFocus()"] --> EXTPOL_CHECK{"mFocusPolicy != null?"}
+    REQ["requestAudioFocus（）"] --> EXTPOL_CHECK{"mFocusPolicy != null?"}
     EXTPOL_CHECK -->|"否"| NORMAL["MediaFocusControl默认处理"]
-    EXTPOL_CHECK -->|"是"| NOTIFY_EXT["notifyExtFocusPolicyFocusRequest()<br/>转发给外部策略"]
+    EXTPOL_CHECK -->|"是"| NOTIFY_EXT["notifyExtFocusPolicyFocusRequest（）<br>转发给外部策略"]
     NOTIFY_EXT --> WAIT["返回REQUEST_WAITING_FOR_EXT_POLICY"]
-    WAIT --> EXT_DECIDE["外部策略决策<br/>(如CarAudioFocus.evaluateFocusRequestLocked())"]
-    EXT_DECIDE -->|"GRANTED"| GRANT["notifyExtPolicyFocusGrant()"]
-    EXT_DECIDE -->|"FAILED"| FAIL["notifyExtPolicyFocusLoss()"]
+    WAIT --> EXT_DECIDE["外部策略决策<br>（如CarAudioFocus.evaluateFocusRequestLocked（））"]
+    EXT_DECIDE -->|"GRANTED"| GRANT["notifyExtPolicyFocusGrant（）"]
+    EXT_DECIDE -->|"FAILED"| FAIL["notifyExtPolicyFocusLoss（）"]
     GRANT --> MFC_GRANT["MediaFocusControl入栈"]
     FAIL --> APP_FAIL["App收到REQUEST_FAILED"]
 ```
@@ -313,9 +313,9 @@ CarAudioService注册AudioPolicy作为外部焦点策略：
 
 ```mermaid
 flowchart TB
-    CAS["CarAudioService初始化"] --> REG["注册AudioPolicy<br/>AudioPolicyConfig.Builder()<br/>.setIsAudioFocusPolicy(true)"]
-    REG --> MFC_SET["MediaFocusControl.setFocusPolicy()"]
-    MFC_SET --> CAPTURE["同时注册AudioRecordingCallback<br/>和AudioPlaybackCallback"]
+    CAS["CarAudioService初始化"] --> REG["注册AudioPolicy<br>AudioPolicyConfig.Builder（）<br>.setIsAudioFocusPolicy（true）"]
+    REG --> MFC_SET["MediaFocusControl.setFocusPolicy（）"]
+    MFC_SET --> CAPTURE["同时注册AudioRecordingCallback<br>和AudioPlaybackCallback"]
 ```
 
 **关键代码**：[`CarAudioService.setupAudioPolicy()`](packages/services/Car/service/src/com/android/car/audio/CarAudioService.java)
@@ -360,7 +360,7 @@ sequenceDiagram
     alt "LOOP_BACK模式"
         APM->>AF: openOutput(RemoteSubmix设备)
         AF->>AF: 创建PlaybackThread(虚拟输出)
-        Note over APM: App播放→被路由到虚拟输出<br/>App录音(AUDIO_SOURCE_REMOTE_SUBMIX)→从虚拟输出读取
+        Note over APM: App播放→被路由到虚拟输出<br>App录音(AUDIO_SOURCE_REMOTE_SUBMIX)→从虚拟输出读取
     else "RENDER模式"
         APM->>AF: openOutput(指定物理设备)
         AF->>AF: 创建PlaybackThread(物理输出)
@@ -377,9 +377,9 @@ sequenceDiagram
 
 ```mermaid
 flowchart TB
-    START["getOutputForAttrInt()"] --> POLICYMIX["mPolicyMixes.getOutputForAttr()"]
+    START["getOutputForAttrInt（）"] --> POLICYMIX["mPolicyMixes.getOutputForAttr（）"]
     POLICYMIX --> HASMIX{"找到匹配的PolicyMix?"}
-    HASMIX -->|"是+RENDER"| DIRECT["openDirectOutput()<br/>独占输出(Cast到HDMI)"]
+    HASMIX -->|"是+RENDER"| DIRECT["openDirectOutput（）<br>独占输出（Cast到HDMI）"]
     HASMIX -->|"是+USE_PRIMARY"| PRIMARY["使用PolicyMix关联输出"]
     HASMIX -->|"否"| ENGINE["继续Engine路由决策"]
     
