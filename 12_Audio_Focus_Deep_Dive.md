@@ -35,7 +35,7 @@ graph TB
 | `mRingOrCallActive` | `boolean` | 来电/通话焦点是否活跃 |
 | `mAudioFocusLock` | `Object` | 焦点操作同步锁 |
 
-**FocusRequester关键字段**（源码: [`FocusRequester.java`](frameworks/base/services/core/java/com/android/server/audio/FocusRequester.java:39)）
+**FocusRequester关键字段**（源码: [`FocusRequester.java`](frameworks/base/services/core/java/com/android/server/audio/FocusRequester.java)）
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
@@ -110,11 +110,11 @@ flowchart TB
     ADDMULTI --> GAINNOTIFY
 ```
 
-**关键源码位置**：[`MediaFocusControl.requestAudioFocus()`](frameworks/base/services/core/java/com/android/server/audio/MediaFocusControl.java:952)
+**关键源码位置**：[`MediaFocusControl.requestAudioFocus()`](frameworks/base/services/core/java/com/android/server/audio/MediaFocusControl.java)
 
 ## 12.4 焦点Loss传播与Loss类型映射
 
-焦点Loss类型由**请求者的Gain类型**和**当前Loss状态**共同决定。核心映射函数 [`focusLossForGainRequest()`](frameworks/base/services/core/java/com/android/server/audio/FocusRequester.java:267):
+焦点Loss类型由**请求者的Gain类型**和**当前Loss状态**共同决定。核心映射函数 [`focusLossForGainRequest()`](frameworks/base/services/core/java/com/android/server/audio/FocusRequester.java):
 
 | 新请求Gain类型 | 当前Loss状态 | 产生的Loss类型 |
 |----------------|-------------|---------------|
@@ -158,7 +158,7 @@ flowchart TB
     end
 ```
 
-**DuckingManager执行流程**（源码: [`PlaybackActivityMonitor.duckPlayers()`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java:762)）
+**DuckingManager执行流程**（源码: [`PlaybackActivityMonitor.duckPlayers()`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java)）
 
 1. 遍历`mPlayers`，找到与loser同UID且正在播放(PLAYER_STATE_STARTED)的播放器
 2. 排除不可Duck的播放器:
@@ -167,7 +167,7 @@ flowchart TB
 3. `mDuckingManager.duckUid()` → 调用`PlayerProxy.setVolume()`降低音量
 4. 强Duck(Strong Duck): USAGE_ASSISTANCE请求者会触发更低的duck音量
 
-**FadeOutManager执行流程**（源码: [`FadeOutManager`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java:36)）
+**FadeOutManager执行流程**（源码: [`FadeOutManager`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java)）
 
 1. 使用VolumeShaper执行2秒淡出曲线: `1.0→0.65→0.0`
 2. 不可淡出的类型: SPEECH内容/AAUDIO/JAM_SOUNDPOOL播放器
@@ -274,7 +274,7 @@ flowchart TB
 
 AOSP14新增的**框架级FadeOut执行器**，在焦点永久丢失(LOSS)时对播放器执行平滑淡出而非瞬间静音，提供更好的用户体验。
 
-**源码**: [`FadeOutManager.java`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java:36)
+**源码**: [`FadeOutManager.java`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java)
 
 ### 12.10.1 核心常量与VolumeShaper曲线
 
@@ -284,7 +284,7 @@ AOSP14新增的**框架级FadeOut执行器**，在焦点永久丢失(LOSS)时对
 | `DELAY_FADE_IN_OFFENDERS_MS` | 2000ms | 违规App回淡延迟（不遵守焦点Loss的App在淡出后延迟2s再fade in） |
 | `FADEOUT_VSHAPE` | times={0, 0.25, 1.0}, volumes={1, 0.65, 0.0} | 淡出VolumeShaper曲线 |
 
-**VolumeShaper曲线详解**（源码: [`FadeOutManager.java:53`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java:53)）：
+**VolumeShaper曲线详解**（源码: [`FadeOutManager.java`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java)）：
 
 ```
 时间轴(ms):    0       500      2000
@@ -300,7 +300,7 @@ AOSP14新增的**框架级FadeOut执行器**，在焦点永久丢失(LOSS)时对
 
 ### 12.10.2 Fade决策逻辑
 
-**canCauseFadeOut()判断**（源码: [`FadeOutManager.java:93`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java:93)）——决定**焦点请求者**是否会触发淡出：
+**canCauseFadeOut()判断**（源码: [`FadeOutManager.java`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java)）——决定**焦点请求者**是否会触发淡出：
 
 ```mermaid
 flowchart TB
@@ -311,7 +311,7 @@ flowchart TB
     PAUSE_FLAG2 -->|"否"| YES_FADE["return true<br>允许执行fade out"]
 ```
 
-**canBeFadedOut()判断**（源码: [`FadeOutManager.java:113`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java:113)）——决定**焦点丢失者的播放器**是否可被淡出：
+**canBeFadedOut()判断**（源码: [`FadeOutManager.java`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java)）——决定**焦点丢失者的播放器**是否可被淡出：
 
 | 过滤维度 | 条件 | 值 | 原因 |
 |----------|------|------|------|
@@ -332,13 +332,13 @@ flowchart TB
 
 ### 12.10.3 FadeOut执行流程
 
-**FadedOutApp内部类**（源码: [`FadeOutManager.java:216`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java:216)）：每个UID对应一个`FadedOutApp`实例，维护被淡出的播放器piid列表。
+**FadedOutApp内部类**（源码: [`FadeOutManager.java`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java)）：每个UID对应一个`FadedOutApp`实例，维护被淡出的播放器piid列表。
 
 核心方法：
-- [`fadeOutUid()`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java:150)：为UID创建FadedOutApp，遍历播放器调用`addFade(apc, false)`
-- [`addFade()`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java:239)：通过`PlayerProxy.applyVolumeShaper(FADEOUT_VSHAPE, PLAY_CREATE_IF_NEEDED)`执行淡出
-- [`unfadeOutUid()`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java:166)：通过`VolumeShaper.Operation.REVERSE`执行反向淡入恢复
-- [`checkFade()`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java:177)：新播放器启动时检查其UID是否在被淡出列表中，若在则立即应用淡出（skipRamp=true）
+- [`fadeOutUid()`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java)：为UID创建FadedOutApp，遍历播放器调用`addFade(apc, false)`
+- [`addFade()`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java)：通过`PlayerProxy.applyVolumeShaper(FADEOUT_VSHAPE, PLAY_CREATE_IF_NEEDED)`执行淡出
+- [`unfadeOutUid()`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java)：通过`VolumeShaper.Operation.REVERSE`执行反向淡入恢复
+- [`checkFade()`](frameworks/base/services/core/java/com/android/server/audio/FadeOutManager.java)：新播放器启动时检查其UID是否在被淡出列表中，若在则立即应用淡出（skipRamp=true）
 
 ### 12.10.4 DELAY_FADE_IN_OFFENDERS_MS回淡逻辑
 
@@ -368,7 +368,7 @@ flowchart TB
 
 `PlaybackActivityMonitor`是框架级ducking/muting/fadeout的**核心执行器**，实现了`PlayerFocusEnforcer`接口，通过VolumeShaper精确控制播放器音量。
 
-**源码**: [`PlaybackActivityMonitor.java`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java:76)
+**源码**: [`PlaybackActivityMonitor.java`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java)
 
 ### 12.11.1 四种VolumeShaper配置
 
@@ -380,13 +380,13 @@ flowchart TB
 | **MUTE_AWAIT_CONNECTION_VSHAPE** | 3 | {0,1}→{1, 0} | 完全静音 | 蓝牙设备连接等待（临时mute） |
 
 **源码位置**:
-- [`DUCK_VSHAPE`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java:88): 标准-14dB duck
-- [`STRONG_DUCK_VSHAPE`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java:103): 强-35dB duck
-- [`MUTE_AWAIT_CONNECTION_VSHAPE`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java:123): 连接等待静音
+- [`DUCK_VSHAPE`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java): 标准-14dB duck
+- [`STRONG_DUCK_VSHAPE`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java): 强-35dB duck
+- [`MUTE_AWAIT_CONNECTION_VSHAPE`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java): 连接等待静音
 
 ### 12.11.2 duckPlayers()实现
 
-**源码**: [`PlaybackActivityMonitor.duckPlayers()`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java:762)
+**源码**: [`PlaybackActivityMonitor.duckPlayers()`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java)
 
 执行逻辑：
 1. 遍历`mPlayers`，筛选与loser同UID且PLAYER_STATE_STARTED的播放器
@@ -394,7 +394,7 @@ flowchart TB
    - `CONTENT_TYPE_SPEECH` → 不duck语音（除非forceDuck=true）
    - `UNDUCKABLE_PLAYER_TYPES` → 不duck AAudio/JamSoundPool
 3. 调用`mDuckingManager.duckUid(uid, apcsToDuck, reqCausesStrongDuck(winner))`
-4. [`reqCausesStrongDuck()`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java:810)判断：winner的Usage为USAGE_ASSISTANT时触发强Duck
+4. [`reqCausesStrongDuck()`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java)判断：winner的Usage为USAGE_ASSISTANT时触发强Duck
 
 ### 12.11.3 Duck vs Strong Duck对比
 
@@ -408,7 +408,7 @@ flowchart TB
 
 ### 12.11.4 MuteAwaitConnection机制
 
-**源码**: [`PlaybackActivityMonitor.muteAwaitConnection()`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java:1421)
+**源码**: [`PlaybackActivityMonitor.muteAwaitConnection()`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java)
 
 当蓝牙音频设备正在连接但尚未就绪时，框架临时mute特定Usage的播放器，避免音频通过扬声器泄露：
 
@@ -496,7 +496,7 @@ sequenceDiagram
 
 `FocusRequester`是焦点栈中每个条目的**封装对象**，记录焦点请求者的全部信息，并负责焦点Loss/Gain的分发与框架级执行决策。
 
-**源码**: [`FocusRequester.java`](frameworks/base/services/core/java/com/android/server/audio/FocusRequester.java:39)
+**源码**: [`FocusRequester.java`](frameworks/base/services/core/java/com/android/server/audio/FocusRequester.java)
 
 ### 12.12.1 核心字段详解
 
@@ -515,11 +515,11 @@ sequenceDiagram
 | `mDeathHandler` | `AudioFocusDeathHandler` | 构造传入 | Binder死亡监控，App进程死亡时自动清理焦点 |
 | `mSdkTarget` | `int` | 构造传入 | App的targetSdkVersion，决定duck/fade策略 |
 
-**源码位置**: [`FocusRequester构造函数`](frameworks/base/services/core/java/com/android/server/audio/FocusRequester.java:95)
+**源码位置**: [`FocusRequester构造函数`](frameworks/base/services/core/java/com/android/server/audio/FocusRequester.java)
 
 ### 12.12.2 handleFocusLoss()分发逻辑
 
-**源码**: [`FocusRequester.handleFocusLoss()`](frameworks/base/services/core/java/com/android/server/audio/FocusRequester.java:369)
+**源码**: [`FocusRequester.handleFocusLoss()`](frameworks/base/services/core/java/com/android/server/audio/FocusRequester.java)
 
 ```mermaid
 flowchart TB
@@ -536,7 +536,7 @@ flowchart TB
     DISPATCH4 -->|"fd != null"| SENDBINDER4["fd.dispatchAudioFocusChange()<br>mFocusLossWasNotified = true"]
 ```
 
-**frameworkHandleFocusLoss()决策**（源码: [`FocusRequester.java:435`](frameworks/base/services/core/java/com/android/server/audio/FocusRequester.java:435)）：
+**frameworkHandleFocusLoss()决策**（源码: [`FocusRequester.java`](frameworks/base/services/core/java/com/android/server/audio/FocusRequester.java)）：
 
 | Loss类型 | 框架行为 | 条件 |
 |----------|----------|------|
@@ -583,7 +583,7 @@ Android焦点系统通过以下机制实现用户间隔离：
 2. **焦点栈全局共享**: `mFocusStack`是全局单栈，但焦点请求通过`mCallingUid`区分用户
 3. **多焦点模式(AAOS)**: `mMultiAudioFocusEnabled`启用后，允许多个播放器同时持有焦点
 
-**源码**: [`MediaFocusControl.java`](frameworks/base/services/core/java/com/android/server/audio/MediaFocusControl.java:97)
+**源码**: [`MediaFocusControl.java`](frameworks/base/services/core/java/com/android/server/audio/MediaFocusControl.java)
 
 | 隔离维度 | 标准Android | AAOS |
 |----------|-------------|------|
@@ -594,7 +594,7 @@ Android焦点系统通过以下机制实现用户间隔离：
 
 ### 12.13.2 mMultiAudioFocusList机制
 
-**源码**: [`MediaFocusControl.mMultiAudioFocusList`](frameworks/base/services/core/java/com/android/server/audio/MediaFocusControl.java:329)
+**源码**: [`MediaFocusControl.mMultiAudioFocusList`](frameworks/base/services/core/java/com/android/server/audio/MediaFocusControl.java)
 
 当`mMultiAudioFocusEnabled=true`时（AAOS通过Settings.System启用）：
 
@@ -602,7 +602,7 @@ Android焦点系统通过以下机制实现用户间隔离：
 - `mMultiAudioFocusList`中的成员不会被LOSS/DUCK——它们享有"并发焦点"
 - 只有当新请求者的交互结果为EXCLUSIVE时，`mMultiAudioFocusList`中的成员才会收到Loss
 
-[`updateMultiAudioFocus()`](frameworks/base/services/core/java/com/android/server/audio/MediaFocusControl.java:1215)方法在启用/禁用多焦点时遍历栈，转换焦点状态。
+[`updateMultiAudioFocus()`](frameworks/base/services/core/java/com/android/server/audio/MediaFocusControl.java)方法在启用/禁用多焦点时遍历栈，转换焦点状态。
 
 ### 12.13.3 用户切换时的焦点迁移
 
@@ -640,7 +640,7 @@ sequenceDiagram
 
 ### 12.13.4 FLAG_DELAY_OK延迟焦点
 
-**源码**: [`MediaFocusControl.java:1016`](frameworks/base/services/core/java/com/android/server/audio/MediaFocusControl.java:1016)
+**源码**: [`MediaFocusControl.java`](frameworks/base/services/core/java/com/android/server/audio/MediaFocusControl.java)
 
 当焦点栈顶有LOCK焦点持有者时，新请求可能被阻塞。`AUDIOFOCUS_FLAG_DELAY_OK`标志允许请求者接受延迟授权：
 
@@ -722,7 +722,7 @@ AAOS车载系统中，焦点Loss可以通过另一条路径执行：
 
 ### 12.14.4 焦点恢复时音量恢复链路
 
-当焦点恢复（GAIN/abandon）时，[`restoreVShapedPlayers()`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java:822)负责恢复被duck/fadeout的播放器：
+当焦点恢复（GAIN/abandon）时，[`restoreVShapedPlayers()`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java)负责恢复被duck/fadeout的播放器：
 
 1. `DuckingManager.unduckUid()` → 对每个被duck的播放器执行`VolumeShaper.Operation.REVERSE`
 2. `FadeOutManager.unfadeOutUid()` → 对每个被fadeout的播放器执行`FADEOUT_VSHAPE.REVERSE`（反向淡入）

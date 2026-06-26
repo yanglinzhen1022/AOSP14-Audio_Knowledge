@@ -117,9 +117,9 @@ graph TB
 
 ### 核心调用链
 
-1. [`AudioManager.requestAudioFocus()`](frameworks/base/media/java/android/media/AudioManager.java:4757) → `service.requestAudioFocus()`
-2. [`AudioService.requestAudioFocus()`](frameworks/base/services/core/java/com/android/server/audio/AudioService.java:9826) → `mMediaFocusControl.requestAudioFocus()`
-3. [`MediaFocusControl.requestAudioFocus()`](frameworks/base/services/core/java/com/android/server/audio/MediaFocusControl.java:952):
+1. [`AudioManager.requestAudioFocus()`](frameworks/base/media/java/android/media/AudioManager.java) → `service.requestAudioFocus()`
+2. [`AudioService.requestAudioFocus()`](frameworks/base/services/core/java/com/android/server/audio/AudioService.java) → `mMediaFocusControl.requestAudioFocus()`
+3. [`MediaFocusControl.requestAudioFocus()`](frameworks/base/services/core/java/com/android/server/audio/MediaFocusControl.java):
    - 创建`FocusRequester`封装请求信息
    - 检查是否有外部AudioPolicy（AAOS场景）
    - 如果有 → `notifyExtFocusPolicyFocusRequest_syncAf()` → CarAudioFocus
@@ -328,7 +328,7 @@ sequenceDiagram
     FADEMGR->>PROXY: PlayerProxy.applyVolumeShaper(PLAY_SKIP_RAMP)
 ```
 
-### 通话Muting机制 — [`mutePlayersForCall()`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java:831)
+### 通话Muting机制 — [`mutePlayersForCall()`](frameworks/base/services/core/java/com/android/server/audio/PlaybackActivityMonitor.java)
 
 ```mermaid
 flowchart TB
@@ -561,7 +561,7 @@ flowchart TB
 
 ```
 
-**源码位置**: [`AudioService.java:5777-5960`](frameworks/base/services/core/java/com/android/server/audio/AudioService.java:5777)
+**源码位置**: [`AudioService.java`](frameworks/base/services/core/java/com/android/server/audio/AudioService.java)
 
 **SetModeDeathHandler.isActive()判定规则**:
 - 特权App(有MODIFY_PHONE_STATE) → 始终active
@@ -596,7 +596,7 @@ flowchart TB
 
 ```
 
-**CommunicationRouteClient栈规则**（源码: [`AudioDeviceBroker.java:2099-2290`](frameworks/base/services/core/java/com/android/server/audio/AudioDeviceBroker.java:2099)）:
+**CommunicationRouteClient栈规则**（源码: [`AudioDeviceBroker.java`](frameworks/base/services/core/java/com/android/server/audio/AudioDeviceBroker.java)）:
 
 | 场景 | 栈操作 | 通信设备 |
 |------|--------|---------|
@@ -621,7 +621,7 @@ flowchart TB
 
 ## 3.9 录音并发仲裁机制 — Concurrent Capture
 
-Android 10+支持多App并发录音，但仲裁规则极其复杂。核心逻辑在[`AudioPolicyService::updateActiveClients_l()`](frameworks/av/services/audiopolicy/service/AudioPolicyService.cpp:880)。
+Android 10+支持多App并发录音，但仲裁规则极其复杂。核心逻辑在[`AudioPolicyService::updateActiveClients_l()`](frameworks/av/services/audiopolicy/service/AudioPolicyService.cpp)。
 
 ### 3.9.1 仲裁数据结构
 
@@ -702,7 +702,7 @@ flowchart TB
 
 ## 3.10 RecordingActivityMonitor — 录音状态追踪
 
-[`RecordingActivityMonitor`](frameworks/base/services/core/java/com/android/server/audio/RecordingActivityMonitor.java:47)实现`AudioSystem.AudioRecordingCallback`，追踪所有活跃录音会话。
+[`RecordingActivityMonitor`](frameworks/base/services/core/java/com/android/server/audio/RecordingActivityMonitor.java)实现`AudioSystem.AudioRecordingCallback`，追踪所有活跃录音会话。
 
 ### 3.10.1 核心数据结构
 

@@ -69,9 +69,9 @@ flowchart TB
 ```
 
 **关键源码位置**:
-- [`AudioService.setStreamVolume()`](frameworks/base/services/core/java/com/android/server/audio/AudioService.java:4457): 音量设置入口
-- [`AudioService.setStreamVolumeInt()`](frameworks/base/services/core/java/com/android/server/audio/AudioService.java:4789): 实际设置
-- [`VolumeStreamState.setIndex()`](frameworks/base/services/core/java/com/android/server/audio/AudioService.java:8467): 索引更新
+- [`AudioService.setStreamVolume()`](frameworks/base/services/core/java/com/android/server/audio/AudioService.java): 音量设置入口
+- [`AudioService.setStreamVolumeInt()`](frameworks/base/services/core/java/com/android/server/audio/AudioService.java): 实际设置
+- [`VolumeStreamState.setIndex()`](frameworks/base/services/core/java/com/android/server/audio/AudioService.java): 索引更新
 
 ### 13.1.3 Stream别名映射
 
@@ -224,7 +224,7 @@ sequenceDiagram
     APM->>APM: updateCallRouting()<br>更新通话路由
 ```
 
-**关键源码位置**: [`AudioPolicyManager.setDeviceConnectionStateInt()`](frameworks/av/services/audiopolicy/managerdefault/AudioPolicyManager.cpp:175)
+**关键源码位置**: [`AudioPolicyManager.setDeviceConnectionStateInt()`](frameworks/av/services/audiopolicy/managerdefault/AudioPolicyManager.cpp)
 
 ### 13.2.3 设备断开→Fallback路由流程
 
@@ -385,11 +385,11 @@ public:
 
 | 方法 | 作用 |
 |------|------|
-| [`getOrCreateProcessorForDevice()`](frameworks/av/services/audioflinger/sounddose/SoundDoseManager.h:57) | 为指定流和设备创建/获取MelProcessor |
-| [`removeStreamProcessor()`](frameworks/av/services/audioflinger/sounddose/SoundDoseManager.h:68) | 流结束时移除对应的MelProcessor |
-| [`setOutputRs2UpperBound()`](frameworks/av/services/audioflinger/sounddose/SoundDoseManager.h:76) | 设置RS2上限（80-100dBA范围） |
-| [`onNewMelValues()`](frameworks/av/services/audioflinger/sounddose/SoundDoseManager.h:118) | MelCallback回调：接收新的MEL值并转发给MelAggregator |
-| [`onMomentaryExposure()`](frameworks/av/services/audioflinger/sounddose/SoundDoseManager.h:121) | MelCallback回调：瞬时MEL > RS2时触发警告 |
+| [`getOrCreateProcessorForDevice()`](frameworks/av/services/audioflinger/sounddose/SoundDoseManager.h) | 为指定流和设备创建/获取MelProcessor |
+| [`removeStreamProcessor()`](frameworks/av/services/audioflinger/sounddose/SoundDoseManager.h) | 流结束时移除对应的MelProcessor |
+| [`setOutputRs2UpperBound()`](frameworks/av/services/audioflinger/sounddose/SoundDoseManager.h) | 设置RS2上限（80-100dBA范围） |
+| [`onNewMelValues()`](frameworks/av/services/audioflinger/sounddose/SoundDoseManager.h) | MelCallback回调：接收新的MEL值并转发给MelAggregator |
+| [`onMomentaryExposure()`](frameworks/av/services/audioflinger/sounddose/SoundDoseManager.h) | MelCallback回调：瞬时MEL > RS2时触发警告 |
 
 ### 13.5.3 ISoundDose AIDL接口
 
@@ -531,7 +531,7 @@ MelProcessor使用3级级联IIR Biquad滤波器（[`BiquadFilter.h`](system/medi
 
 ### 13.6.3 MelCallback接口详解
 
-源码路径：[`MelProcessor.h:47-71`](system/media/audio_utils/include/audio_utils/MelProcessor.h:47)
+源码路径：[`MelProcessor.h`](system/media/audio_utils/include/audio_utils/MelProcessor.h)
 
 ```cpp
 class MelCallback : public virtual RefBase {
@@ -660,7 +660,7 @@ classDiagram
 
 ### 13.7.3 CSD聚合算法
 
-**核心方法**：[`aggregateAndAddNewMelRecord()`](system/media/audio_utils/include/audio_utils/MelAggregator.h:114)
+**核心方法**：[`aggregateAndAddNewMelRecord()`](system/media/audio_utils/include/audio_utils/MelAggregator.h)
 
 CSD聚合的关键步骤：
 

@@ -60,7 +60,7 @@ classDiagram
 
 ### AudioTrack Native层实现详解
 
-#### 创建Track（[`AudioTrack::createTrack_l()`](frameworks/av/media/libaudioclient/AudioTrack.cpp:1807)）
+#### 创建Track（[`AudioTrack::createTrack_l()`](frameworks/av/media/libaudioclient/AudioTrack.cpp)）
 
 ```mermaid
 sequenceDiagram
@@ -76,7 +76,7 @@ sequenceDiagram
     NativeAT->>NativeAT: 构造Proxy，映射共享内存
 ```
 
-**CreateTrackInput参数**（[`IAudioFlinger.h:186`](frameworks/av/media/libaudioclient/include/media/IAudioFlinger.h:186)）：
+**CreateTrackInput参数**（[`IAudioFlinger.h`](frameworks/av/media/libaudioclient/include/media/IAudioFlinger.h)）：
 
 | 参数 | 类型 | 说明 |
 |------|------|------|
@@ -90,7 +90,7 @@ sequenceDiagram
 | `speed` | float | 初始播放速度 |
 | `selectedDeviceId` | audio_port_handle_t | 指定路由设备 |
 
-#### start流程详解（[`AudioTrack::start()`](frameworks/av/media/libaudioclient/AudioTrack.cpp:782)）
+#### start流程详解（[`AudioTrack::start()`](frameworks/av/media/libaudioclient/AudioTrack.cpp)）
 
 ```mermaid
 flowchart TB
@@ -113,7 +113,7 @@ flowchart TB
 - `DEAD_OBJECT`处理：start()返回DEAD_OBJECT时自动触发restoreTrack_l()重建Track
 - 优先级提升：Fast track线程获得SCHED_FIFO调度优先级，降低延迟
 
-#### stop流程详解（[`AudioTrack::stop()`](frameworks/av/media/libaudioclient/AudioTrack.cpp:922)）
+#### stop流程详解（[`AudioTrack::stop()`](frameworks/av/media/libaudioclient/AudioTrack.cpp)）
 
 ```mermaid
 flowchart TB
@@ -126,7 +126,7 @@ flowchart TB
     CLEAR --> THREAD["暂停AudioTrackThread<br>恢复原始调度优先级"]
 ```
 
-#### write流程详解（[`AudioTrack::write()`](frameworks/av/media/libaudioclient/AudioTrack.cpp:2310)）
+#### write流程详解（[`AudioTrack::write()`](frameworks/av/media/libaudioclient/AudioTrack.cpp)）
 
 ```mermaid
 flowchart TB
@@ -151,7 +151,7 @@ flowchart TB
 
 ### AudioRecord Native层实现详解
 
-#### 创建Record（[`AudioRecord::createRecord_l()`](frameworks/av/media/libaudioclient/AudioRecord.cpp:782)）
+#### 创建Record（[`AudioRecord::createRecord_l()`](frameworks/av/media/libaudioclient/AudioRecord.cpp)）
 
 ```mermaid
 sequenceDiagram
@@ -185,7 +185,7 @@ sequenceDiagram
 
 #### start/stop/read流程
 
-**start**（[`AudioRecord::start()`](frameworks/av/media/libaudioclient/AudioRecord.cpp:420)）：
+**start**（[`AudioRecord::start()`](frameworks/av/media/libaudioclient/AudioRecord.cpp)）：
 ```
 1. flush mProxy → 丢弃buffer中的旧数据
 2. mActive = true
@@ -194,7 +194,7 @@ sequenceDiagram
 5. 设置SCHED_FIFO优先级（Fast track）
 ```
 
-**stop**（[`AudioRecord::stop()`](frameworks/av/media/libaudioclient/AudioRecord.cpp:503)）：
+**stop**（[`AudioRecord::stop()`](frameworks/av/media/libaudioclient/AudioRecord.cpp)）：
 ```
 1. mActive = false
 2. mProxy->interrupt() → 唤醒等待中的read
@@ -202,7 +202,7 @@ sequenceDiagram
 4. 恢复原始调度优先级
 ```
 
-**read**（[`AudioRecord::read()`](frameworks/av/media/libaudioclient/AudioRecord.cpp:1201)）：
+**read**（[`AudioRecord::read()`](frameworks/av/media/libaudioclient/AudioRecord.cpp)）：
 ```
 循环：
   → obtainBuffer() → 从cblk获取可读数据位置
@@ -222,42 +222,42 @@ AudioSystem是Native层的"AudioManager"，封装了与AudioFlinger和AudioPolic
 
 | 方法 | 目标服务 | 说明 |
 |------|---------|------|
-| [`setStreamVolume()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:119) | AF | 设置单个流的音量值 |
-| [`getStreamVolume()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:121) | AF | 获取单个流的音量值 |
-| [`setStreamMute()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:125) | AF | 静音/取消静音单个流 |
-| [`setMasterVolume()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:111) | AF | 设置主音量 |
-| [`setMasterMute()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:115) | AF | 设置主静音 |
-| [`setVoiceVolume()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:216) | AF | 设置通话音量 |
+| [`setStreamVolume()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | AF | 设置单个流的音量值 |
+| [`getStreamVolume()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | AF | 获取单个流的音量值 |
+| [`setStreamMute()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | AF | 静音/取消静音单个流 |
+| [`setMasterVolume()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | AF | 设置主音量 |
+| [`setMasterMute()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | AF | 设置主静音 |
+| [`setVoiceVolume()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | AF | 设置通话音量 |
 
 #### 参数设置方法
 
 | 方法 | 目标服务 | 说明 |
 |------|---------|------|
-| [`setParameters(ioHandle, kvp)`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:149) | AF | 向指定I/O流设置键值对参数 |
-| [`getParameters(ioHandle, keys)`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:150) | AF | 从指定I/O流获取键值对参数 |
-| [`setParameters(kvp)`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:152) | AF | 全局设置键值对参数 |
-| [`getParameters(keys)`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:153) | AF | 全局获取键值对参数 |
+| [`setParameters(ioHandle, kvp)`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | AF | 向指定I/O流设置键值对参数 |
+| [`getParameters(ioHandle, keys)`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | AF | 从指定I/O流获取键值对参数 |
+| [`setParameters(kvp)`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | AF | 全局设置键值对参数 |
+| [`getParameters(keys)`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | AF | 全局获取键值对参数 |
 
 #### 设备与路由方法
 
 | 方法 | 目标服务 | 说明 |
 |------|---------|------|
-| [`setDeviceConnectionState()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:283) | APS | 设备连接/断开状态通知 |
-| [`getDeviceConnectionState()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:286) | APS | 查询设备连接状态 |
-| [`setPhoneState()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:292) | APS | 设置通话模式 |
-| [`setForceUse()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:293) | APS | 设置强制使用配置 |
-| [`getForceUse()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:294) | APS | 查询强制使用配置 |
-| [`getOutputForAttr()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:316) | APS | 获取音频输出路由 |
-| [`getInputForAttr()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:351) | APS | 获取音频输入路由 |
+| [`setDeviceConnectionState()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | APS | 设备连接/断开状态通知 |
+| [`getDeviceConnectionState()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | APS | 查询设备连接状态 |
+| [`setPhoneState()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | APS | 设置通话模式 |
+| [`setForceUse()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | APS | 设置强制使用配置 |
+| [`getForceUse()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | APS | 查询强制使用配置 |
+| [`getOutputForAttr()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | APS | 获取音频输出路由 |
+| [`getInputForAttr()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | APS | 获取音频输入路由 |
 
 #### 回调注册方法
 
 | 方法 | 说明 |
 |------|------|
-| [`setDynPolicyCallback()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:165) | 注册动态策略变更回调 |
-| [`setRecordConfigCallback()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:166) | 注册录音配置变更回调 |
-| [`setRoutingCallback()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:167) | 注册路由变更回调 |
-| [`setVolInitReqCallback()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h:168) | 注册音量范围初始化请求回调 |
+| [`setDynPolicyCallback()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | 注册动态策略变更回调 |
+| [`setRecordConfigCallback()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | 注册录音配置变更回调 |
+| [`setRoutingCallback()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | 注册路由变更回调 |
+| [`setVolInitReqCallback()`](frameworks/av/media/libaudioclient/include/media/AudioSystem.h) | 注册音量范围初始化请求回调 |
 
 ---
 
@@ -289,7 +289,7 @@ graph TB
 
 #### IAudioFlinger — 核心音频服务接口
 
-[`IAudioFlinger.h`](frameworks/av/media/libaudioclient/include/media/IAudioFlinger.h:186)
+[`IAudioFlinger.h`](frameworks/av/media/libaudioclient/include/media/IAudioFlinger.h)
 
 **Track/Record管理**：
 
@@ -396,7 +396,7 @@ graph TB
 
 ### audio_track_cblk_t — 共享内存控制块详解
 
-[`AudioTrackShared.h:207-279`](frameworks/av/include/private/media/AudioTrackShared.h:207)
+[`AudioTrackShared.h`](frameworks/av/include/private/media/AudioTrackShared.h)
 
 ```
 ┌────────────────────────────────────────────────────────┐
@@ -427,7 +427,7 @@ graph TB
 
 ### Streaming模式FIFO同步机制
 
-[`AudioTrackShared.h:134-145`](frameworks/av/include/private/media/AudioTrackShared.h:134)
+[`AudioTrackShared.h`](frameworks/av/include/private/media/AudioTrackShared.h)
 
 **核心：mFront/mRear环形缓冲区位置同步**
 
@@ -589,7 +589,7 @@ AOSP14将音频IPC从传统Binder C++迁移到AIDL（Android Interface Definitio
 
 ### 4.5.1 IAudioFlingerService AIDL接口
 
-源码路径: [`IAudioFlingerService.aidl`](frameworks/av/media/libaudioclient/aidl/android/media/IAudioFlingerService.aidl:32)
+源码路径: [`IAudioFlingerService.aidl`](frameworks/av/media/libaudioclient/aidl/android/media/IAudioFlingerService.aidl)
 
 #### 方法列表
 
@@ -623,7 +623,7 @@ IAudioFlingerService.aidl定义了AudioFlinger的全部公开IPC接口，共约7
 
 #### 与传统IAudioFlinger.h对比
 
-[`IAudioFlinger.h`](frameworks/av/media/libaudioclient/include/media/IAudioFlinger.h:69)中的`IAudioFlinger`是纯虚接口类，它定义了与AIDL完全对应的方法签名，但使用C++原生类型（`audio_io_handle_t`、`audio_stream_type_t`等）而非AIDL parcelable类型。
+[`IAudioFlinger.h`](frameworks/av/media/libaudioclient/include/media/IAudioFlinger.h)中的`IAudioFlinger`是纯虚接口类，它定义了与AIDL完全对应的方法签名，但使用C++原生类型（`audio_io_handle_t`、`audio_stream_type_t`等）而非AIDL parcelable类型。
 
 迁移状态对比：
 
@@ -631,11 +631,11 @@ IAudioFlingerService.aidl定义了AudioFlinger的全部公开IPC接口，共约7
 |------|------------------------------|---------------------------|------|
 | 方法签名 | C++原生类型 | AIDL parcelable类型 | **完全迁移** — 所有方法都有AIDL版本 |
 | 参数传递 | 手动parcel/unparcel | AIDL自动生成 | **AIDL优先** |
-| 服务注册 | `BnAudioFlinger`(旧) → 已废弃 | [`AudioFlingerServerAdapter`](frameworks/av/media/libaudioclient/include/media/IAudioFlinger.h:513) : `BnAudioFlingerService` | **AIDL路径** |
+| 服务注册 | `BnAudioFlinger`(旧) → 已废弃 | [`AudioFlingerServerAdapter`](frameworks/av/media/libaudioclient/include/media/IAudioFlinger.h) : `BnAudioFlingerService` | **AIDL路径** |
 | 客户端获取 | `BpAudioFlinger`(旧) → 已废弃 | `BpAudioFlingerService`(AIDL生成) | **AIDL路径** |
-| 数据类型 | `CreateTrackInput/Output`内部类 | [`CreateTrackRequest`](frameworks/av/media/libaudioclient/aidl/android/media/CreateTrackRequest.aidl:32) / `CreateTrackResponse` parcelable | **AIDL优先** |
+| 数据类型 | `CreateTrackInput/Output`内部类 | [`CreateTrackRequest`](frameworks/av/media/libaudioclient/aidl/android/media/CreateTrackRequest.aidl) / `CreateTrackResponse` parcelable | **AIDL优先** |
 
-> **关键设计**: AOSP14中IAudioFlinger.h不再是独立Binder接口，而是作为[`AudioFlingerServerAdapter::Delegate`](frameworks/av/media/libaudioclient/include/media/IAudioFlinger.h:520)的基类。AudioFlinger类继承Delegate，Adapter将AIDL调用转发到Delegate(即AudioFlinger)的C++方法。
+> **关键设计**: AOSP14中IAudioFlinger.h不再是独立Binder接口，而是作为[`AudioFlingerServerAdapter::Delegate`](frameworks/av/media/libaudioclient/include/media/IAudioFlinger.h)的基类。AudioFlinger类继承Delegate，Adapter将AIDL调用转发到Delegate(即AudioFlinger)的C++方法。
 
 #### IAudioFlingerService创建流程
 
@@ -696,7 +696,7 @@ classDiagram
 
 ### 4.5.2 IAudioTrackCallback/IAudioRecordCallback — Track/Record事件回调
 
-源码: [`IAudioTrackCallback.aidl`](frameworks/av/media/libaudioclient/aidl/android/media/IAudioTrackCallback.aidl:25)
+源码: [`IAudioTrackCallback.aidl`](frameworks/av/media/libaudioclient/aidl/android/media/IAudioTrackCallback.aidl)
 
 #### IAudioTrackCallback方法
 
@@ -710,7 +710,7 @@ IAudioTrackCallback.aidl目前定义了一个方法：
 
 #### 回调注册时机
 
-[`CreateTrackRequest.aidl`](frameworks/av/media/libaudioclient/aidl/android/media/CreateTrackRequest.aidl:39)中包含`IAudioTrackCallback audioTrackCallback`字段，在`createTrack()`调用时一并传入：
+[`CreateTrackRequest.aidl`](frameworks/av/media/libaudioclient/aidl/android/media/CreateTrackRequest.aidl)中包含`IAudioTrackCallback audioTrackCallback`字段，在`createTrack()`调用时一并传入：
 
 ```mermaid
 sequenceDiagram
@@ -729,11 +729,11 @@ sequenceDiagram
 
 #### IAudioRecord回调
 
-[`IAudioRecord.aidl`](frameworks/av/media/libaudioclient/aidl/android/media/IAudioRecord.aidl:26)定义了录制端接口，方法包括`start()`、`stop()`、`getActiveMicrophones()`、`setPreferredMicrophoneDirection()`、`setPreferredMicrophoneFieldDimension()`、`shareAudioHistory()`。录制端无独立callback AIDL接口， overrun/格式变更通过类似机制处理。
+[`IAudioRecord.aidl`](frameworks/av/media/libaudioclient/aidl/android/media/IAudioRecord.aidl)定义了录制端接口，方法包括`start()`、`stop()`、`getActiveMicrophones()`、`setPreferredMicrophoneDirection()`、`setPreferredMicrophoneFieldDimension()`、`shareAudioHistory()`。录制端无独立callback AIDL接口， overrun/格式变更通过类似机制处理。
 
 ### 4.5.3 IAudioFlingerClient — AudioFlinger客户端通知
 
-源码: [`IAudioFlingerClient.aidl`](frameworks/av/media/libaudioclient/aidl/android/media/IAudioFlingerClient.aidl:30)
+源码: [`IAudioFlingerClient.aidl`](frameworks/av/media/libaudioclient/aidl/android/media/IAudioFlingerClient.aidl)
 
 #### 方法列表
 
@@ -744,7 +744,7 @@ sequenceDiagram
 
 #### 客户端注册时机
 
-[`IAudioFlingerService.aidl`](frameworks/av/media/libaudioclient/aidl/android/media/IAudioFlingerService.aidl:93)中的`registerClient(IAudioFlingerClient)`方法用于注册。AudioSystem初始化时调用此方法，每个进程只允许注册一次（单例模式）。
+[`IAudioFlingerService.aidl`](frameworks/av/media/libaudioclient/aidl/android/media/IAudioFlingerService.aidl)中的`registerClient(IAudioFlingerClient)`方法用于注册。AudioSystem初始化时调用此方法，每个进程只允许注册一次（单例模式）。
 
 #### AudioFlinger死亡通知链路
 
@@ -820,11 +820,11 @@ audio_utils是AOSP音频子系统的底层工具库，被AudioFlinger、AudioPol
 
 ### 4.6.1 ChannelMix — 多声道混音矩阵
 
-源码: [`ChannelMix.h`](system/media/audio_utils/include/audio_utils/ChannelMix.h:21)
+源码: [`ChannelMix.h`](system/media/audio_utils/include/audio_utils/ChannelMix.h)
 
 #### 声道掩码→混音矩阵映射
 
-[`ChannelMix.h`](system/media/audio_utils/include/audio_utils/ChannelMix.h:36)的核心函数是`fillChannelMatrix<OUTPUT_CHANNEL_MASK>()`，它以编译期模板参数（INPUT/OUTPUT声道掩码）生成混音系数矩阵：
+[`ChannelMix.h`](system/media/audio_utils/include/audio_utils/ChannelMix.h)的核心函数是`fillChannelMatrix<OUTPUT_CHANNEL_MASK>()`，它以编译期模板参数（INPUT/OUTPUT声道掩码）生成混音系数矩阵：
 
 ```
 模板签名:
@@ -851,7 +851,7 @@ constexpr bool fillChannelMatrix(
 
 #### sparseChannelMatrixMultiply
 
-[`sparseChannelMatrixMultiply`](system/media/audio_utils/include/audio_utils/ChannelMix.h:26)是编译期优化的混音执行函数，利用模板特化避免运行时switch分支，直接生成针对特定声道组合的SIMD优化代码。
+[`sparseChannelMatrixMultiply`](system/media/audio_utils/include/audio_utils/ChannelMix.h)是编译期优化的混音执行函数，利用模板特化避免运行时switch分支，直接生成针对特定声道组合的SIMD优化代码。
 
 #### 与AudioMixer的调用关系
 
@@ -877,21 +877,21 @@ flowchart LR
 
 AOSP音频子系统有**两套**SRC实现：
 
-1. **audio_utils/resampler** (C API): [`resampler.h`](system/media/audio_utils/include/audio_utils/resampler.h:62) — 用于RecordBufferConverter，面向录音路径
-2. **AudioResampler** (C++ API): [`AudioResampler.h`](frameworks/av/media/libaudioprocessing/include/media/AudioResampler.h:32) — 用于AudioMixer/PlaybackThread，面向播放路径
+1. **audio_utils/resampler** (C API): [`resampler.h`](system/media/audio_utils/include/audio_utils/resampler.h) — 用于RecordBufferConverter，面向录音路径
+2. **AudioResampler** (C++ API): [`AudioResampler.h`](frameworks/av/media/libaudioprocessing/include/media/AudioResampler.h) — 用于AudioMixer/PlaybackThread，面向播放路径
 
 #### 3种SRC实现 (AudioResampler体系)
 
 | 实现类 | 质量 | 算法 | 用途 |
 |--------|------|------|------|
-| [`AudioResamplerOrder1`](frameworks/av/media/libaudioprocessing/AudioResampler.cpp:43) | LOW | 线性插值(1阶) | VoIP/低延迟场景 |
-| [`AudioResamplerCubic`](frameworks/av/media/libaudioprocessing/AudioResamplerCubic.h:29) | MED | 三次插值(3阶) | 一般播放 |
-| [`AudioResamplerSinc`](frameworks/av/media/libaudioprocessing/AudioResamplerSinc.h:35) | HIGH/VERY_HIGH | 多相FIR(Polyphase) | 高质量重采样 |
-| [`AudioResamplerDyn`](frameworks/av/media/libaudioprocessing/AudioResamplerDyn.h:42) | DYN_LOW/MED/HIGH | 动态FIR | 多声道动态采样率 |
+| [`AudioResamplerOrder1`](frameworks/av/media/libaudioprocessing/AudioResampler.cpp) | LOW | 线性插值(1阶) | VoIP/低延迟场景 |
+| [`AudioResamplerCubic`](frameworks/av/media/libaudioprocessing/AudioResamplerCubic.h) | MED | 三次插值(3阶) | 一般播放 |
+| [`AudioResamplerSinc`](frameworks/av/media/libaudioprocessing/AudioResamplerSinc.h) | HIGH/VERY_HIGH | 多相FIR(Polyphase) | 高质量重采样 |
+| [`AudioResamplerDyn`](frameworks/av/media/libaudioprocessing/AudioResamplerDyn.h) | DYN_LOW/MED/HIGH | 动态FIR | 多声道动态采样率 |
 
 #### quality常量映射
 
-[`resampler.h`](system/media/audio_utils/include/audio_utils/resampler.h:26)定义了质量等级常量：
+[`resampler.h`](system/media/audio_utils/include/audio_utils/resampler.h)定义了质量等级常量：
 
 | 常量 | 值 | 说明 |
 |------|---|------|
@@ -926,7 +926,7 @@ sequenceDiagram
 
 ### 4.6.3 fifo — 共享内存FIFO
 
-源码: [`fifo.h`](system/media/audio_utils/include/audio_utils/fifo.h:46)
+源码: [`fifo.h`](system/media/audio_utils/include/audio_utils/fifo.h)
 
 #### audio_utils::fifo与audio_track_cblk_t的关系
 
@@ -939,17 +939,17 @@ sequenceDiagram
 
 #### FIFO框架类体系
 
-[`fifo.h`](system/media/audio_utils/include/audio_utils/fifo.h:46)定义了三个层次：
+[`fifo.h`](system/media/audio_utils/include/audio_utils/fifo.h)定义了三个层次：
 
 | 类 | 说明 |
 |----|------|
-| [`audio_utils_fifo_base`](system/media/audio_utils/include/audio_utils/fifo.h:46) | 索引管理基类，仅操作frame索引，不涉及buffer |
-| [`audio_utils_fifo`](system/media/audio_utils/include/audio_utils/fifo.h:144) | 知晓frameSize和buffer指针，不拥有buffer |
+| [`audio_utils_fifo_base`](system/media/audio_utils/include/audio_utils/fifo.h) | 索引管理基类，仅操作frame索引，不涉及buffer |
+| [`audio_utils_fifo`](system/media/audio_utils/include/audio_utils/fifo.h) | 知晓frameSize和buffer指针，不拥有buffer |
 | `audio_utils_fifo_writer` / `audio_utils_fifo_reader` | 写入/读取操作类 |
 
 #### 同步模式
 
-[`audio_utils_fifo_sync`](system/media/audio_utils/include/audio_utils/fifo.h:29)枚举定义了四种同步策略：
+[`audio_utils_fifo_sync`](system/media/audio_utils/include/audio_utils/fifo.h)枚举定义了四种同步策略：
 
 | 模式 | 值 | 说明 | 适用场景 |
 |------|---|------|----------|
@@ -991,12 +991,12 @@ flowchart TB
 
 | 类名 | 头文件 | 说明 | 被谁使用 |
 |------|--------|------|----------|
-| [`BiquadFilter`](system/media/audio_utils/include/audio_utils/BiquadFilter.h:46) | BiquadFilter.h | 3级Biquad IIR滤波器，支持NEON优化 | SoundDose A-weighting(声剂量A计权) |
-| [`Balance`](system/media/audio_utils/include/audio_utils/Balance.h:28) | Balance.h | 左右声道平衡控制 | AudioFlinger setMasterBalance() |
-| [`Statistics`](system/media/audio_utils/include/audio_utils/Statistics.h:254) | Statistics.h | 统计采样(均值/方差/峰值) | underrun统计、AudioMixer性能分析 |
-| [`TimestampVerifier`](system/media/audio_utils/include/audio_utils/TimestampVerifier.h:35) | TimestampVerifier.h | 时间戳连续性验证 | AAudio MMAP模式时间戳校验 |
-| [`PowerLog`](system/media/audio_utils/include/audio_utils/PowerLog.h:41) | PowerLog.h | 功率日志(周期性记录功率值) | SoundDose Mel计算日志 |
-| LogPlot | [`LogPlot.h`](system/media/audio_utils/include/audio_utils/LogPlot.h:28) | 功率数据可视化(文本图表) | SoundDose调试输出 |
+| [`BiquadFilter`](system/media/audio_utils/include/audio_utils/BiquadFilter.h) | BiquadFilter.h | 3级Biquad IIR滤波器，支持NEON优化 | SoundDose A-weighting(声剂量A计权) |
+| [`Balance`](system/media/audio_utils/include/audio_utils/Balance.h) | Balance.h | 左右声道平衡控制 | AudioFlinger setMasterBalance() |
+| [`Statistics`](system/media/audio_utils/include/audio_utils/Statistics.h) | Statistics.h | 统计采样(均值/方差/峰值) | underrun统计、AudioMixer性能分析 |
+| [`TimestampVerifier`](system/media/audio_utils/include/audio_utils/TimestampVerifier.h) | TimestampVerifier.h | 时间戳连续性验证 | AAudio MMAP模式时间戳校验 |
+| [`PowerLog`](system/media/audio_utils/include/audio_utils/PowerLog.h) | PowerLog.h | 功率日志(周期性记录功率值) | SoundDose Mel计算日志 |
+| LogPlot | [`LogPlot.h`](system/media/audio_utils/include/audio_utils/LogPlot.h) | 功率数据可视化(文本图表) | SoundDose调试输出 |
 
 > **BiquadFilter**: SoundDose模块使用3级Biquad IIR实现A计权滤波(A-weighting)，将频域功率转换为感知响度等级，用于CSD(Continuous Sound Dose)安全监测。
 

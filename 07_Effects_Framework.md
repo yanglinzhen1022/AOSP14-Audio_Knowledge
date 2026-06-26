@@ -36,7 +36,7 @@ graph TB
 ## 7.2 EffectChain — 效果链
 
 ### 模块职责
-[`EffectChain`](frameworks/av/services/audioflinger/Effects.h:448)是同一sessionId下所有EffectModule的集合，按顺序串联处理音频数据。
+[`EffectChain`](frameworks/av/services/audioflinger/Effects.h)是同一sessionId下所有EffectModule的集合，按顺序串联处理音频数据。
 
 ### EffectChain与Thread的关系
 
@@ -59,7 +59,7 @@ graph TB
 
 > **关键**: session=0是全局效果链，作用于该Thread上所有Track。非0 sessionId的EffectChain只处理对应Track的数据。
 
-### EffectChain内部处理流程 — [`process_l()`](frameworks/av/services/audioflinger/Effects.cpp:2273)
+### EffectChain内部处理流程 — [`process_l()`](frameworks/av/services/audioflinger/Effects.cpp)
 
 ```mermaid
 flowchart TB
@@ -91,7 +91,7 @@ flowchart TB
 | Pre-processing | EFFECT_FLAG_TYPE_PRE_PROC | 录音链中 | — | — | AEC/NS/AGC，录音方向 |
 | Replace | EFFECT_FLAG_TYPE_REPLACE | 按优先级排序 | 链输入 | 链输出 | 完全替换信号(如Spatializer) |
 
-**Insert效果排序规则** — [`getInsertIndex()`](frameworks/av/services/audioflinger/Effects.cpp:2382):
+**Insert效果排序规则** — [`getInsertIndex()`](frameworks/av/services/audioflinger/Effects.cpp):
 ```
 排序优先级(从前往后):
 1. EFFECT_FLAG_TYPE_INSERT → 通用Insert效果(EQ/BassBoost)
@@ -143,7 +143,7 @@ stateDiagram-v2
     REMOVED --> DESTROYED: release()
 ```
 
-### EffectModule.process()详解（源码: [`Effects.cpp:672`](frameworks/av/services/audioflinger/Effects.cpp:672)）
+### EffectModule.process()详解（源码: [`Effects.cpp`](frameworks/av/services/audioflinger/Effects.cpp)）
 
 ```mermaid
 flowchart TB
@@ -179,7 +179,7 @@ flowchart TB
 | `create_l()` | 创建效果实例，加载HAL库 | Effects.cpp |
 | `start_l()` | 启动效果处理(状态→ACTIVE) | Effects.cpp |
 | `stop_l()` | 停止效果处理(状态→STOPPED) | Effects.cpp |
-| `process()` | 处理一帧音频数据 | Effects.cpp:672 |
+| `process()` | 处理一帧音频数据 | Effects.cpp |
 | `setVolume_l()` | 设置音量(效果可能修改音量曲线) | Effects.cpp |
 | `setDevices_l()` | 设置输出设备(效果可能根据设备调整) | Effects.cpp |
 | `setMode_l()` | 设置音频模式(NORMAL/RING/IN_CALL) | Effects.cpp |
@@ -207,7 +207,7 @@ PCM16(Track输出) → float(EffectChain内部) → PCM16/PCM_FLOAT(HAL写入)
 
 ### 成员变量与HAL交互
 
-[`EffectModule`](frameworks/av/services/audioflinger/Effects.h:220)的核心成员变量：
+[`EffectModule`](frameworks/av/services/audioflinger/Effects.h)的核心成员变量：
 
 | 成员 | 类型 | 说明 | 源码行 |
 |------|------|------|--------|
@@ -250,7 +250,7 @@ flowchart TB
 
 > **AIDL/HIDL双路径**: [`EffectsFactoryHalInterface::create()`](frameworks/av/media/libaudiohal/EffectsFactoryHalInterface.cpp)优先选择AIDL实现，回退到HIDL。
 
-### EffectModule::process()完整数据路径（源码: [`Effects.cpp:672`](frameworks/av/services/audioflinger/Effects.cpp:672)）
+### EffectModule::process()完整数据路径（源码: [`Effects.cpp`](frameworks/av/services/audioflinger/Effects.cpp)）
 
 ```mermaid
 flowchart TB
@@ -288,7 +288,7 @@ flowchart TB
 
 ## 7.5 EffectChain::process_l()深度解析
 
-### process_l()完整源码逻辑（源码: [`Effects.cpp:2273`](frameworks/av/services/audioflinger/Effects.cpp:2273)）
+### process_l()完整源码逻辑（源码: [`Effects.cpp`](frameworks/av/services/audioflinger/Effects.cpp)）
 
 process_l()的核心判断流程：
 
@@ -310,7 +310,7 @@ flowchart LR
 
 > `update()/commit()`仅对外部buffer生效（Thread分配的shared buffer），对HAL分配的buffer无效。
 
-### EffectChain::addEffect_ll()排序逻辑（源码: [`Effects.cpp:2350`](frameworks/av/services/audioflinger/Effects.cpp:2350)）
+### EffectChain::addEffect_ll()排序逻辑（源码: [`Effects.cpp`](frameworks/av/services/audioflinger/Effects.cpp)）
 
 ```mermaid
 flowchart TB
@@ -330,7 +330,7 @@ flowchart TB
 
 ### 架构总览
 
-[`Spatializer`](frameworks/av/services/audiopolicy/service/Spatializer.h:93)实现多通道空间音频+头部追踪，由AudioPolicyService管理，AudioFlinger提供专用SpatializerThread。
+[`Spatializer`](frameworks/av/services/audiopolicy/service/Spatializer.h)实现多通道空间音频+头部追踪，由AudioPolicyService管理，AudioFlinger提供专用SpatializerThread。
 
 ```mermaid
 graph TB
@@ -400,7 +400,7 @@ flowchart TB
 
 ### SpatializerPoseController
 
-[`SpatializerPoseController`](frameworks/av/services/audiopolicy/service/SpatializerPoseController.h:44)整合头部传感器数据，计算head→stage变换矩阵：
+[`SpatializerPoseController`](frameworks/av/services/audiopolicy/service/SpatializerPoseController.h)整合头部传感器数据，计算head→stage变换矩阵：
 
 - **SensorPoseProvider**: 封装Android SensorManager，监听指定传感器handle
 - **HeadTrackingMode**: STATIC(固定虚拟布局) / DYNAMIC(屏幕相对) / TRACKED(实时头部追踪)
@@ -561,7 +561,7 @@ Vendor在`audio_effects.xml`中声明自定义效果：
 
 ### 7.10.1 EffectHandle在音效架构中的位置
 
-[`EffectHandle`](frameworks/av/services/audioflinger/Effects.h:359)继承自`android::media::BnEffect`，是IEffect AIDL接口的服务端实现。当App通过`AudioEffect`创建音效时，AudioFlinger创建`EffectModule`作为实际处理引擎，再创建`EffectHandle`作为Binder代理返回给App端。App的所有音效操作（enable/disable/command等）均通过Binder IPC到达`EffectHandle`，再由`EffectHandle`转发到对应的`EffectModule`。
+[`EffectHandle`](frameworks/av/services/audioflinger/Effects.h)继承自`android::media::BnEffect`，是IEffect AIDL接口的服务端实现。当App通过`AudioEffect`创建音效时，AudioFlinger创建`EffectModule`作为实际处理引擎，再创建`EffectHandle`作为Binder代理返回给App端。App的所有音效操作（enable/disable/command等）均通过Binder IPC到达`EffectHandle`，再由`EffectHandle`转发到对应的`EffectModule`。
 
 **类关系图：**
 
@@ -586,7 +586,7 @@ graph TB
     EH -.->|"mEffectClient回调"| IEF
 ```
 
-**EffectHandle核心成员变量（源码: [`Effects.h:417-436`](frameworks/av/services/audioflinger/Effects.h:417)）：**
+**EffectHandle核心成员变量（源码: [`Effects.h`](frameworks/av/services/audioflinger/Effects.h)）：**
 
 | 成员 | 类型 | 说明 |
 |------|------|------|
@@ -624,7 +624,7 @@ graph LR
 
 ### 7.10.2 核心方法详解
 
-#### enable() — 启用音效（源码: [`Effects.cpp:1852`](frameworks/av/services/audioflinger/Effects.cpp:1852)）
+#### enable() — 启用音效（源码: [`Effects.cpp`](frameworks/av/services/audioflinger/Effects.cpp)）
 
 ```cpp
 Status AudioFlinger::EffectHandle::enable(int32_t* _aidl_return) {
@@ -678,7 +678,7 @@ flowchart TB
 
 > **关键**: `mEnabled`与实际效果启用状态是两个概念。效果被suspend时`mEnabled=true`但实际未处理音频。当suspend解除后，EffectModule会根据`mEnabled`恢复效果。
 
-#### disable() — 禁用音效（源码: [`Effects.cpp:1890`](frameworks/av/services/audioflinger/Effects.cpp:1890)）
+#### disable() — 禁用音效（源码: [`Effects.cpp`](frameworks/av/services/audioflinger/Effects.cpp)）
 
 ```cpp
 Status AudioFlinger::EffectHandle::disable(int32_t* _aidl_return) {
@@ -695,7 +695,7 @@ Status AudioFlinger::EffectHandle::disable(int32_t* _aidl_return) {
 }
 ```
 
-#### command() — 参数/命令交互（源码: [`Effects.cpp:1989`](frameworks/av/services/audioflinger/Effects.cpp:1989)）
+#### command() — 参数/命令交互（源码: [`Effects.cpp`](frameworks/av/services/audioflinger/Effects.cpp)）
 
 `command()`是App与Effect HAL交互的核心通道，处理参数设置、查询和自定义命令：
 
@@ -796,11 +796,11 @@ sequenceDiagram
 
 **关键步骤说明：**
 
-1. **创建阶段**: `ThreadBase::createEffect_l()`（源码: [`Threads.cpp:1556`](frameworks/av/services/audioflinger/Threads.cpp:1556)）先创建`EffectModule`，再创建`EffectHandle`，通过`effect->addHandle(handle)`建立关联
+1. **创建阶段**: `ThreadBase::createEffect_l()`（源码: [`Threads.cpp`](frameworks/av/services/audioflinger/Threads.cpp)）先创建`EffectModule`，再创建`EffectHandle`，通过`effect->addHandle(handle)`建立关联
 2. **使用阶段**: App通过Binder调用`enable()/disable()/command()`，EffectHandle转发到EffectModule
-3. **断开阶段**: `disconnect()`（源码: [`Effects.cpp:1924`](frameworks/av/services/audioflinger/Effects.cpp:1924)）将`mDisconnected=true`，调用`effect->disconnectHandle()`从EffectModule的handle列表中移除
+3. **断开阶段**: `disconnect()`（源码: [`Effects.cpp`](frameworks/av/services/audioflinger/Effects.cpp)）将`mDisconnected=true`，调用`effect->disconnectHandle()`从EffectModule的handle列表中移除
 4. **析构阶段**: `~EffectHandle()`调用`disconnect(false)`（不unpin），释放共享内存和Client引用
-5. **Thread清理**: `disconnectEffectHandle()`（源码: [`Threads.cpp:1660`](frameworks/av/services/audioflinger/Threads.cpp:1660)）检查是否最后一个Handle，若是则`removeEffect_l()`销毁整个EffectModule
+5. **Thread清理**: `disconnectEffectHandle()`（源码: [`Threads.cpp`](frameworks/av/services/audioflinger/Threads.cpp)）检查是否最后一个Handle，若是则`removeEffect_l()`销毁整个EffectModule
 
 ---
 
@@ -849,7 +849,7 @@ graph TB
 
 ### 7.11.1 DeviceEffectProxy架构设计
 
-[`DeviceEffectProxy`](frameworks/av/services/audioflinger/Effects.h:709)继承自`EffectBase`，用于设备级音效（Device Effect）的代理管理。与普通EffectModule不同，DeviceEffectProxy不绑定到特定Thread上的EffectChain，而是通过`DeviceEffectManager`管理，根据AudioPatch动态在相关Thread上创建EffectModule实例。
+[`DeviceEffectProxy`](frameworks/av/services/audioflinger/Effects.h)继承自`EffectBase`，用于设备级音效（Device Effect）的代理管理。与普通EffectModule不同，DeviceEffectProxy不绑定到特定Thread上的EffectChain，而是通过`DeviceEffectManager`管理，根据AudioPatch动态在相关Thread上创建EffectModule实例。
 
 **DeviceEffectProxy架构图：**
 
@@ -887,7 +887,7 @@ graph TB
     EMHAL -->|"HW隧道"| HWHAL["Effect HAL<br>直接HW加速"]
 ```
 
-**DeviceEffectProxy核心成员变量（源码: [`Effects.h:803-811`](frameworks/av/services/audioflinger/Effects.h:803)）：**
+**DeviceEffectProxy核心成员变量（源码: [`Effects.h`](frameworks/av/services/audioflinger/Effects.h)）：**
 
 | 成员 | 类型 | 说明 |
 |------|------|------|
@@ -940,7 +940,7 @@ sequenceDiagram
     DEP->>DEP: 根据isEnabled状态调用handle->enable/disable
 ```
 
-**setEnabled()的多Handle联动（源码: [`Effects.cpp:3312`](frameworks/av/services/audioflinger/Effects.cpp:3312)）：**
+**setEnabled()的多Handle联动（源码: [`Effects.cpp`](frameworks/av/services/audioflinger/Effects.cpp)）：**
 
 ```cpp
 status_t AudioFlinger::DeviceEffectProxy::setEnabled(bool enabled, bool fromHandle) {
@@ -961,7 +961,7 @@ status_t AudioFlinger::DeviceEffectProxy::setEnabled(bool enabled, bool fromHand
 
 当DeviceEffectProxy被启用/禁用时，它会联动所有已注册的EffectHandle——确保每个Thread上的EffectModule实例状态一致。
 
-**AudioPatch释放时效果清理（源码: [`Effects.cpp:3461`](frameworks/av/services/audioflinger/Effects.cpp:3461)）：**
+**AudioPatch释放时效果清理（源码: [`Effects.cpp`](frameworks/av/services/audioflinger/Effects.cpp)）：**
 
 ```mermaid
 flowchart TB
@@ -971,7 +971,7 @@ flowchart TB
     REMOVE --> DESTROY["EffectHandle析构<br>disconnect()→EffectModule移除handle"]
 ```
 
-**DeviceEffectManager创建流程（源码: [`DeviceEffectManager.cpp:59`](frameworks/av/services/audioflinger/DeviceEffectManager.cpp:59)）：**
+**DeviceEffectManager创建流程（源码: [`DeviceEffectManager.cpp`](frameworks/av/services/audioflinger/DeviceEffectManager.cpp)）：**
 
 ```mermaid
 flowchart TB
@@ -1056,10 +1056,10 @@ EffectsFactory是整个音效框架的Native入口，负责解析XML配置、加
 
 | 数据结构 | 定义位置 | 功能 |
 |---------|---------|------|
-| [`lib_entry_t`](frameworks/av/media/libeffects/factory/EffectsFactory.h:39) | EffectsFactory.h | 库条目：desc/name/path/handle/effects链表/锁 |
-| [`effect_entry_t`](frameworks/av/media/libeffects/factory/EffectsFactory.h:47) | EffectsFactory.h | 效果条目：itfe/subItfe/lib指针 |
-| [`sub_effect_entry_t`](frameworks/av/media/libeffects/factory/EffectsFactory.h:53) | EffectsFactory.h | 子效果条目：含proxy UUID |
-| [`list_elem_t`](frameworks/av/media/libeffects/factory/EffectsFactory.h:34) | EffectsFactory.h | 通用链表节点：object/next |
+| [`lib_entry_t`](frameworks/av/media/libeffects/factory/EffectsFactory.h) | EffectsFactory.h | 库条目：desc/name/path/handle/effects链表/锁 |
+| [`effect_entry_t`](frameworks/av/media/libeffects/factory/EffectsFactory.h) | EffectsFactory.h | 效果条目：itfe/subItfe/lib指针 |
+| [`sub_effect_entry_t`](frameworks/av/media/libeffects/factory/EffectsFactory.h) | EffectsFactory.h | 子效果条目：含proxy UUID |
+| [`list_elem_t`](frameworks/av/media/libeffects/factory/EffectsFactory.h) | EffectsFactory.h | 通用链表节点：object/next |
 
 #### 全局状态
 
@@ -1102,7 +1102,7 @@ sequenceDiagram
     EF->>EF: pthread_mutex_unlock(gLibLock)
 ```
 
-核心函数[`EffectsFactory_createEffect()`](frameworks/av/media/libeffects/factory/EffectsFactory.c:444)的实现逻辑：
+核心函数[`EffectsFactory_createEffect()`](frameworks/av/media/libeffects/factory/EffectsFactory.c)的实现逻辑：
 
 ```c
 // 简化流程
@@ -1124,8 +1124,8 @@ EffectsFactory为每个effect实例分配不同的接口表：
 
 | 接口表 | 特点 | 分配条件 |
 |--------|------|---------|
-| [`gInterface`](frameworks/av/media/libeffects/factory/EffectsFactory.c:105) | 无`process_reverse` | 默认 |
-| [`gInterfaceWithReverse`](frameworks/av/media/libeffects/factory/EffectsFactory.c:124) | 包含`process_reverse` | 效果支持反向处理 |
+| [`gInterface`](frameworks/av/media/libeffects/factory/EffectsFactory.c) | 无`process_reverse` | 默认 |
+| [`gInterfaceWithReverse`](frameworks/av/media/libeffects/factory/EffectsFactory.c) | 包含`process_reverse` | 效果支持反向处理 |
 
 两个接口表的`process`方法都代理到实际库实现，但`gInterfaceWithReverse`额外提供了`process_reverse`入口，用于AEC（回声消除）等需要双向处理的场景。
 
@@ -1162,7 +1162,7 @@ flowchart TD
     G -->|不匹配| I[加入gLibraryFailedList]
 ```
 
-[`loadLibrary()`](frameworks/av/media/libeffects/factory/EffectsXmlConfigLoader.cpp:180)的关键步骤：
+[`loadLibrary()`](frameworks/av/media/libeffects/factory/EffectsXmlConfigLoader.cpp)的关键步骤：
 1. 在`LD_EFFECT_LIBRARY_PATH`目录列表中搜索`.so`文件
 2. `dlopen()`打开动态库
 3. `dlsym()`查找`AUDIO_EFFECT_LIBRARY_INFO_SYM_AS_STR`符号
@@ -1354,11 +1354,11 @@ flowchart LR
 
 | 处理器 | 类名 | 功能 | 关键参数 |
 |--------|------|------|---------|
-| Ramp | [`Ramp`](frameworks/av/media/libeffects/hapticgenerator/Processors.h:30) | 半波整流，非负化 | 无 |
+| Ramp | [`Ramp`](frameworks/av/media/libeffects/hapticgenerator/Processors.h) | 半波整流，非负化 | 无 |
 | BPF | BiquadFilter | 带通滤波，提取振动频段 | resonantFreq, Q |
-| Distortion | [`Distortion`](frameworks/av/media/libeffects/hapticgenerator/Processors.h:50) | 压缩失真，含LPF | cornerFrequency, inputGain, outputGain |
+| Distortion | [`Distortion`](frameworks/av/media/libeffects/hapticgenerator/Processors.h) | 压缩失真，含LPF | cornerFrequency, inputGain, outputGain |
 | BSF | BiquadFilter | 带阻滤波，去除共振峰 | resonantFreq, zeroQ=8, poleQ=4 |
-| SlowEnvelope | [`SlowEnvelope`](frameworks/av/media/libeffects/hapticgenerator/Processors.h:40) | 低通滤波+幂归一化 | 控制触觉强度包络 |
+| SlowEnvelope | [`SlowEnvelope`](frameworks/av/media/libeffects/hapticgenerator/Processors.h) | 低通滤波+幂归一化 | 控制触觉强度包络 |
 
 各处理器的具体实现：
 

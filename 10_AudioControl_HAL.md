@@ -60,7 +60,7 @@ AudioControl HAL是AAOS特有的HAL接口，负责车载焦点通知、音量增
 
 ## 10.3 焦点回调流程
 
-### CarAudioFocus焦点评估核心 — [`evaluateFocusRequestLocked()`](packages/services/Car/service/src/com/android/car/audio/CarAudioFocus.java:207)
+### CarAudioFocus焦点评估核心 — [`evaluateFocusRequestLocked()`](packages/services/Car/service/src/com/android/car/audio/CarAudioFocus.java)
 
 AAOS使用自己的焦点管理器`CarAudioFocus`(而非标准Android的`MediaFocusControl`)，通过`AudioPolicy.AudioPolicyFocusListener`接口拦截焦点请求。
 
@@ -93,7 +93,7 @@ flowchart TB
     DUCKENTRY --> DUCKNOTIFY["CarDucking.onAudioFocusChange（）<br>→ onDevicesToDuckChange（）"]
 ```
 
-**CarAudioFocus核心数据结构**（源码: [`CarAudioFocus.java:97`](packages/services/Car/service/src/com/android/car/audio/CarAudioFocus.java:97)）
+**CarAudioFocus核心数据结构**（源码: [`CarAudioFocus.java`](packages/services/Car/service/src/com/android/car/audio/CarAudioFocus.java)）
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
@@ -279,7 +279,7 @@ sequenceDiagram
 
 ### 类继承体系与桥接机制
 
-[`AudioControlWrapperAidl`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlWrapperAidl.java:48) 是AAOS Car Audio与AudioControl AIDL HAL之间的核心适配层。它继承自抽象类 [`AudioControlWrapper`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlWrapper.java:28)，并实现了所有AIDL版本(v1/v2/v3)的接口适配。
+[`AudioControlWrapperAidl`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlWrapperAidl.java) 是AAOS Car Audio与AudioControl AIDL HAL之间的核心适配层。它继承自抽象类 [`AudioControlWrapper`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlWrapper.java)，并实现了所有AIDL版本(v1/v2/v3)的接口适配。
 
 ```mermaid
 classDiagram
@@ -343,13 +343,13 @@ classDiagram
 
 | 内部类 | 接口版本 | 代理的AIDL回调 | 注册时机 |
 |--------|---------|---------------|---------|
-| [`FocusListenerWrapper`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlWrapperAidl.java:413) | AIDL v1+ | `IFocusListener` | `registerFocusListener()` |
-| [`AudioGainCallbackWrapper`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlWrapperAidl.java:440) | AIDL v2+ | `IAudioGainCallback` | `registerAudioGainCallback()` |
-| [`ModuleChangeCallbackWrapper`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlWrapperAidl.java:470) | AIDL v3 | `IModuleChangeCallback` | `registerModuleChangeCallback()` |
+| [`FocusListenerWrapper`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlWrapperAidl.java) | AIDL v1+ | `IFocusListener` | `registerFocusListener()` |
+| [`AudioGainCallbackWrapper`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlWrapperAidl.java) | AIDL v2+ | `IAudioGainCallback` | `registerAudioGainCallback()` |
+| [`ModuleChangeCallbackWrapper`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlWrapperAidl.java) | AIDL v3 | `IModuleChangeCallback` | `registerModuleChangeCallback()` |
 
 ### AIDL服务连接与版本协商
 
-[`AudioControlFactory`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlFactory.java:28) 按优先级尝试连接HAL: AIDL → HIDL V2 → HIDL V1。连接成功后，[`supportsFeature()`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlWrapperAidl.java:174) 基于 `getInterfaceVersion()` 判断feature可用性:
+[`AudioControlFactory`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlFactory.java) 按优先级尝试连接HAL: AIDL → HIDL V2 → HIDL V1。连接成功后，[`supportsFeature()`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlWrapperAidl.java) 基于 `getInterfaceVersion()` 判断feature可用性:
 
 ```mermaid
 flowchart TB
@@ -371,7 +371,7 @@ flowchart TB
     REGCALLBACK --> MODREG["registerModuleChangeCallback()<br>→ ModuleChangeCallbackWrapper（v3）"]
 ```
 
-**版本-feature映射表**（源码: [`AudioControlWrapperAidl.java:174`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlWrapperAidl.java:174)）:
+**版本-feature映射表**（源码: [`AudioControlWrapperAidl.java`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlWrapperAidl.java)）:
 
 | getInterfaceVersion() | FEAT_DUCKING | FEAT_GAIN_CALLBACK | FEAT_MODULE_CHANGE |
 |----------------------|-------------|--------------------|--------------------|
@@ -381,7 +381,7 @@ flowchart TB
 
 ### 核心桥接方法实现
 
-[`AudioControlWrapperAidl`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlWrapperAidl.java:48) 将CarAudioService的Java调用转换为AIDL HAL接口调用:
+[`AudioControlWrapperAidl`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlWrapperAidl.java) 将CarAudioService的Java调用转换为AIDL HAL接口调用:
 
 ```mermaid
 flowchart LR
@@ -423,7 +423,7 @@ flowchart LR
 **数据转换要点**:
 - DuckingInfo/MutingInfo需要将CarAudioService内部结构转换为AIDL HAL的`CarDuckingInfo/CarMutingInfo` Parcelable
 - `FocusListenerWrapper`实现`IFocusListener.Stub`，将HAL回调转发给CarAudioService的`FocusListener`
-- `binderDied()`（源码: [`AudioControlWrapperAidl.java:258`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlWrapperAidl.java:258)）处理HAL进程死亡，触发重新连接
+- `binderDied()`（源码: [`AudioControlWrapperAidl.java`](packages/services/Car/service/src/com/android/car/audio/hal/AudioControlWrapperAidl.java)）处理HAL进程死亡，触发重新连接
 
 ---
 
@@ -431,7 +431,7 @@ flowchart LR
 
 ### 数据结构与存储模型
 
-[`HalAudioFocus`](packages/services/Car/service/src/com/android/car/audio/hal/HalAudioFocus.java:38) 管理来自AudioControl HAL的外部焦点请求。核心数据结构为 `mHalFocusRequestsByZoneAndUsage`:
+[`HalAudioFocus`](packages/services/Car/service/src/com/android/car/audio/hal/HalAudioFocus.java) 管理来自AudioControl HAL的外部焦点请求。核心数据结构为 `mHalFocusRequestsByZoneAndUsage`:
 
 ```mermaid
 classDiagram
@@ -476,7 +476,7 @@ classDiagram
 
 ### requestAudioFocus完整流程
 
-[`HalAudioFocus.requestAudioFocus()`](packages/services/Car/service/src/com/android/car/audio/hal/HalAudioFocus.java:106) 处理HAL侧发起的焦点请求:
+[`HalAudioFocus.requestAudioFocus()`](packages/services/Car/service/src/com/android/car/audio/hal/HalAudioFocus.java) 处理HAL侧发起的焦点请求:
 
 ```mermaid
 sequenceDiagram
@@ -498,7 +498,7 @@ sequenceDiagram
     ACW-->>HAL: 通过IFocusListener通知结果
 ```
 
-**`generateAudioAttributes()`关键逻辑**（源码: [`HalAudioFocus.java:214`](packages/services/Car/service/src/com/android/car/audio/hal/HalAudioFocus.java:214)）:
+**`generateAudioAttributes()`关键逻辑**（源码: [`HalAudioFocus.java`](packages/services/Car/service/src/com/android/car/audio/hal/HalAudioFocus.java)）:
 
 该方法将HAL传入的usage+zoneId转换为Android AudioAttributes。**zoneId通过Bundle extra传递**，使得CarAudioFocus能识别请求来自哪个音频区域:
 
@@ -580,11 +580,11 @@ sequenceDiagram
 
 | 方法 | 处理的Reason | 行为 |
 |------|-------------|------|
-| [`shouldBlockVolumeRequest()`](packages/services/Car/service/src/com/android/car/audio/CarAudioGainMonitor.java:89) | FORCED_MASTER_MUTE | 阻止音量请求，强制静音 |
-| [`shouldLimitVolumeRequest()`](packages/services/Car/service/src/com/android/car/audio/CarAudioGainMonitor.java:102) | FORCED_MASTER_VOLUME, RESTRICTED_VOLUME | 限制音量到最大值 |
-| [`shouldDuckVolume()`](packages/services/Car/service/src/com/android/car/audio/CarAudioGainMonitor.java:115) | NAVIGATION_VOLUME, CALL_VOLUME | Duck音量到指定级别 |
-| [`shouldMuteVolume()`](packages/services/Car/service/src/com/android/car/audio/CarAudioGainMonitor.java:128) | CALL_MUTE, EMERGENCY_MUTE | 静音指定设备 |
-| [`updateVolumeIndex()`](packages/services/Car/service/src/com/android/car/audio/CarAudioGainMonitor.java:141) | REMOTE_MASTER_VOLUME | 更新音量索引 |
+| [`shouldBlockVolumeRequest()`](packages/services/Car/service/src/com/android/car/audio/CarAudioGainMonitor.java) | FORCED_MASTER_MUTE | 阻止音量请求，强制静音 |
+| [`shouldLimitVolumeRequest()`](packages/services/Car/service/src/com/android/car/audio/CarAudioGainMonitor.java) | FORCED_MASTER_VOLUME, RESTRICTED_VOLUME | 限制音量到最大值 |
+| [`shouldDuckVolume()`](packages/services/Car/service/src/com/android/car/audio/CarAudioGainMonitor.java) | NAVIGATION_VOLUME, CALL_VOLUME | Duck音量到指定级别 |
+| [`shouldMuteVolume()`](packages/services/Car/service/src/com/android/car/audio/CarAudioGainMonitor.java) | CALL_MUTE, EMERGENCY_MUTE | 静音指定设备 |
+| [`updateVolumeIndex()`](packages/services/Car/service/src/com/android/car/audio/CarAudioGainMonitor.java) | REMOTE_MASTER_VOLUME | 更新音量索引 |
 
 **ExtraInfo映射表**（源码: [`CarAudioGainMonitor`](packages/services/Car/service/src/com/android/car/audio/CarAudioGainMonitor.java)）:
 

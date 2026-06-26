@@ -32,7 +32,7 @@ AAOS（Android Automotive OS）在标准Android Audio之上增加了车载特有
 ## 9.2 CarAudioService — 车载音频核心服务
 
 ### 模块职责
-[`CarAudioService`](packages/services/Car/service/src/com/android/car/audio/CarAudioService.java:152)是AAOS音频系统的核心服务，管理多Zone、车载焦点、音量组、AudioControl HAL交互。
+[`CarAudioService`](packages/services/Car/service/src/com/android/car/audio/CarAudioService.java)是AAOS音频系统的核心服务，管理多Zone、车载焦点、音量组、AudioControl HAL交互。
 
 ### 初始化流程
 
@@ -116,7 +116,7 @@ graph TB
 ### 模块职责
 [`CarAudioFocus`](packages/services/Car/service/src/com/android/car/audio/CarAudioFocus.java)实现AAOS特有的焦点仲裁，使用交互矩阵替代标准Android的栈模型。
 
-### 交互矩阵（[`FocusInteraction`](packages/services/Car/service/src/com/android/car/audio/FocusInteraction.java:62)）
+### 交互矩阵（[`FocusInteraction`](packages/services/Car/service/src/com/android/car/audio/FocusInteraction.java)）
 
 ```mermaid
 graph TB
@@ -134,7 +134,7 @@ graph TB
 
 ### 焦点决策流程
 
-[`evaluateFocusRequestInternallyLocked()`](packages/services/Car/service/src/com/android/car/audio/CarAudioFocus.java:451)：
+[`evaluateFocusRequestInternallyLocked()`](packages/services/Car/service/src/com/android/car/audio/CarAudioFocus.java)：
 
 1. 查找当前Zone的焦点持有者列表
 2. 对每个持有者，查询矩阵：`matrix[holderContext][requesterContext]`
@@ -186,7 +186,7 @@ sequenceDiagram
 
 ## 9.6 CarAudioContext — 车载音频上下文深度解析
 
-### 上下文枚举（[`CarAudioContext.java:50-130`](packages/services/Car/service/src/com/android/car/audio/CarAudioContext.java:50)）
+### 上下文枚举（[`CarAudioContext.java`](packages/services/Car/service/src/com/android/car/audio/CarAudioContext.java)）
 
 | Context | 值 | 说明 | 对应AudioAttributes.usage | 交互优先级 |
 |---------|-----|------|--------------------------|-----------|
@@ -314,7 +314,7 @@ flowchart TB
 
 ### 模块职责
 
-[`CarAudioZoneConfig`](packages/services/Car/service/src/com/android/car/audio/CarAudioZoneConfig.java:52)封装单个Zone的音频配置，包含`CarVolumeGroup`列表、设备地址到GroupId的映射、以及Dynamic Mix路由验证逻辑。一个Zone可以拥有多个Config（如默认配置和备用配置），支持运行时切换。
+[`CarAudioZoneConfig`](packages/services/Car/service/src/com/android/car/audio/CarAudioZoneConfig.java)封装单个Zone的音频配置，包含`CarVolumeGroup`列表、设备地址到GroupId的映射、以及Dynamic Mix路由验证逻辑。一个Zone可以拥有多个Config（如默认配置和备用配置），支持运行时切换。
 
 ### 核心数据结构
 
@@ -353,7 +353,7 @@ flowchart TB
 
 ### validateCanUseDynamicMixRouting验证
 
-[`validateCanUseDynamicMixRouting()`](packages/services/Car/service/src/com/android/car/audio/CarAudioZoneConfig.java:159)验证两个关键约束：
+[`validateCanUseDynamicMixRouting()`](packages/services/Car/service/src/com/android/car/audio/CarAudioZoneConfig.java)验证两个关键约束：
 1. **同一usage不能路由到两个不同设备地址**：Dynamic Mix仅支持usage级别匹配，同一usage路由到不同地址会导致规则冲突
 2. **同一地址不能出现在两个VolumeGroup中**：AudioPolicy无法为同一地址建立多条路由规则
 
@@ -365,7 +365,7 @@ flowchart TB
 
 ### 模块职责
 
-[`CarZonesAudioFocus`](packages/services/Car/service/src/com/android/car/audio/CarZonesAudioFocus.java:52)继承`AudioPolicy.AudioPolicyFocusListener`，是AAOS多Zone焦点管理的顶层分发器。它为每个Zone维护独立的`CarAudioFocus`实例，实现Zone间焦点隔离。
+[`CarZonesAudioFocus`](packages/services/Car/service/src/com/android/car/audio/CarZonesAudioFocus.java)继承`AudioPolicy.AudioPolicyFocusListener`，是AAOS多Zone焦点管理的顶层分发器。它为每个Zone维护独立的`CarAudioFocus`实例，实现Zone间焦点隔离。
 
 ### 架构设计
 
@@ -387,7 +387,7 @@ graph TB
 
 ### Per-Zone焦点实例创建
 
-[`createCarZonesAudioFocus()`](packages/services/Car/service/src/com/android/car/audio/CarZonesAudioFocus.java:61)为每个Zone创建独立的焦点管理器：
+[`createCarZonesAudioFocus()`](packages/services/Car/service/src/com/android/car/audio/CarZonesAudioFocus.java)为每个Zone创建独立的焦点管理器：
 
 ```mermaid
 sequenceDiagram
@@ -409,7 +409,7 @@ sequenceDiagram
 
 ### 模块职责
 
-[`CarAudioDynamicRouting`](packages/services/Car/service/src/com/android/car/audio/CarAudioDynamicRouting.java:41)负责将XML配置中的Zone/VolumeGroup/Bus地址映射转换为`AudioMixingRule`+`AudioPolicy`注册，实现AAOS特有的动态音频路由。
+[`CarAudioDynamicRouting`](packages/services/Car/service/src/com/android/car/audio/CarAudioDynamicRouting.java)负责将XML配置中的Zone/VolumeGroup/Bus地址映射转换为`AudioMixingRule`+`AudioPolicy`注册，实现AAOS特有的动态音频路由。
 
 ### 路由构建流程
 
@@ -432,7 +432,7 @@ flowchart TB
 
 ### AudioMixingRule构建细节
 
-[`setupAudioDynamicRoutingForGroup()`](packages/services/Car/service/src/com/android/car/audio/CarAudioDynamicRouting.java:81)对每个Bus地址：
+[`setupAudioDynamicRoutingForGroup()`](packages/services/Car/service/src/com/android/car/audio/CarAudioDynamicRouting.java)对每个Bus地址：
 1. 查询该地址关联的所有`contextIdsForAddress`
 2. 对每个context，获取对应的`AudioAttributes[]`数组
 3. 逐个添加`RULE_MATCH_ATTRIBUTE_USAGE`规则
@@ -440,7 +440,7 @@ flowchart TB
 
 ### 镜像设备路由
 
-[`setupAudioDynamicRoutingForMirrorDevice()`](packages/services/Car/service/src/com/android/car/audio/CarAudioDynamicRouting.java:131)为镜像设备单独建立路由规则，使用`USAGE_MEDIA`作为匹配规则。
+[`setupAudioDynamicRoutingForMirrorDevice()`](packages/services/Car/service/src/com/android/car/audio/CarAudioDynamicRouting.java)为镜像设备单独建立路由规则，使用`USAGE_MEDIA`作为匹配规则。
 
 ---
 
@@ -448,7 +448,7 @@ flowchart TB
 
 ### 模块职责
 
-[`CarVolume`](packages/services/Car/service/src/com/android/car/audio/CarVolume.java:64)负责确定音量调节时应优先响应的音频Context，实现"按键音量跟随最活跃音频"的逻辑。
+[`CarVolume`](packages/services/Car/service/src/com/android/car/audio/CarVolume.java)负责确定音量调节时应优先响应的音频Context，实现"按键音量跟随最活跃音频"的逻辑。
 
 ### V1/V2优先级列表
 
@@ -471,7 +471,7 @@ graph LR
 
 ### getSuggestedAudioContextAndSaveIfFound算法
 
-[`getSuggestedAudioContextAndSaveIfFound()`](packages/services/Car/service/src/com/android/car/audio/CarVolume.java:182)的决策流程：
+[`getSuggestedAudioContextAndSaveIfFound()`](packages/services/Car/service/src/com/android/car/audio/CarVolume.java)的决策流程：
 
 ```mermaid
 flowchart TB
@@ -495,7 +495,7 @@ flowchart TB
 
 ### 模块职责
 
-[`CarAudioGainMonitor`](packages/services/Car/service/src/com/android/car/audio/CarAudioGainMonitor.java:38)管理AudioControl HAL的Gain回调注册，并将HAL Gain变更事件按Zone分发，生成`CarVolumeGroupEvent`通知上层。
+[`CarAudioGainMonitor`](packages/services/Car/service/src/com/android/car/audio/CarAudioGainMonitor.java)管理AudioControl HAL的Gain回调注册，并将HAL Gain变更事件按Zone分发，生成`CarVolumeGroupEvent`通知上层。
 
 ### Gain事件处理链路
 
@@ -514,7 +514,7 @@ sequenceDiagram
 
 ### Reasons枚举与ExtraInfo映射
 
-[`REASONS_TO_EXTRA_INFO`](packages/services/Car/service/src/com/android/car/audio/CarAudioGainMonitor.java:137)将HAL Reasons映射到CarVolumeGroupEvent ExtraInfo：
+[`REASONS_TO_EXTRA_INFO`](packages/services/Car/service/src/com/android/car/audio/CarAudioGainMonitor.java)将HAL Reasons映射到CarVolumeGroupEvent ExtraInfo：
 
 | Reasons（HAL层） | ExtraInfo（Framework层） | 说明 |
 |------------------|------------------------|------|
@@ -545,7 +545,7 @@ flowchart TB
 
 ### 模块职责
 
-[`CarDucking`](packages/services/Car/service/src/com/android/car/audio/CarDucking.java:40)实现AAOS系统级自动Ducking。当焦点变化时，自动计算需要duck的设备列表，通知AudioControl HAL执行硬件级Ducking。
+[`CarDucking`](packages/services/Car/service/src/com/android/car/audio/CarDucking.java)实现AAOS系统级自动Ducking。当焦点变化时，自动计算需要duck的设备列表，通知AudioControl HAL执行硬件级Ducking。
 
 ### Ducking执行流程
 
@@ -564,7 +564,7 @@ sequenceDiagram
 
 ### Ducking评估策略
 
-[`evaluateAttributesToDuck()`](packages/services/Car/service/src/com/android/car/audio/CarDucking.java:129)支持两种评估路径：
+[`evaluateAttributesToDuck()`](packages/services/Car/service/src/com/android/car/audio/CarDucking.java)支持两种评估路径：
 
 ```mermaid
 flowchart TB
@@ -577,7 +577,7 @@ flowchart TB
 
 ### CarDuckingInfo数据结构
 
-[`CarDuckingInfo`](packages/services/Car/service/src/com/android/car/audio/CarDuckingInfo.java:37)封装每个Zone的Ducking状态：
+[`CarDuckingInfo`](packages/services/Car/service/src/com/android/car/audio/CarDuckingInfo.java)封装每个Zone的Ducking状态：
 - `mZoneId`：Zone标识
 - `mAddressesToDuck`：需要duck的设备地址列表
 - `mAddressesToUnduck`：需要取消duck的设备地址列表
@@ -589,7 +589,7 @@ flowchart TB
 
 ### 模块职责
 
-[`CarAudioMirrorRequestHandler`](packages/services/Car/service/src/com/android/car/audio/CarAudioMirrorRequestHandler.java:44)管理音频镜像请求的全生命周期，维护requestId到镜像设备、requestId到Zone列表、Zone到requestId的三重映射关系。
+[`CarAudioMirrorRequestHandler`](packages/services/Car/service/src/com/android/car/audio/CarAudioMirrorRequestHandler.java)管理音频镜像请求的全生命周期，维护requestId到镜像设备、requestId到Zone列表、Zone到requestId的三重映射关系。
 
 ### 三重映射数据结构
 
@@ -630,9 +630,9 @@ sequenceDiagram
 
 ### enableMirrorForZones与rejectMirrorForZones
 
-[`enableMirrorForZones()`](packages/services/Car/service/src/com/android/car/audio/CarAudioMirrorRequestHandler.java:105)成功时将目标Zone加入映射，并更新`mZonesToMirrorRequestId`反向映射。
+[`enableMirrorForZones()`](packages/services/Car/service/src/com/android/car/audio/CarAudioMirrorRequestHandler.java)成功时将目标Zone加入映射，并更新`mZonesToMirrorRequestId`反向映射。
 
-[`rejectMirrorForZones()`](packages/services/Car/service/src/com/android/car/audio/CarAudioMirrorRequestHandler.java:140)拒绝时清理映射记录，触发`mMirrorRequestCallback.onMirrorAudioRequestRejected()`通知App。
+[`rejectMirrorForZones()`](packages/services/Car/service/src/com/android/car/audio/CarAudioMirrorRequestHandler.java)拒绝时清理映射记录，触发`mMirrorRequestCallback.onMirrorAudioRequestRejected()`通知App。
 
 ---
 
@@ -640,7 +640,7 @@ sequenceDiagram
 
 ### 模块职责
 
-[`MediaRequestHandler`](packages/services/Car/service/src/com/android/car/audio/MediaRequestHandler.java:43)管理媒体音频从OccupantZone到PrimaryZone的请求协商，实现后排乘客媒体播放请求到主驾Zone的授权流程。
+[`MediaRequestHandler`](packages/services/Car/service/src/com/android/car/audio/MediaRequestHandler.java)管理媒体音频从OccupantZone到PrimaryZone的请求协商，实现后排乘客媒体播放请求到主驾Zone的授权流程。
 
 ### 核心数据结构
 
@@ -677,7 +677,7 @@ flowchart TB
 
 ### registerPrimaryZoneMediaAudioRequestCallback
 
-[`registerPrimaryZoneMediaAudioRequestCallback()`](packages/services/Car/service/src/com/android/car/audio/MediaRequestHandler.java:89)允许PrimaryZone注册回调，当后排乘客请求媒体播放时，通过回调通知主驾用户进行授权决策。
+[`registerPrimaryZoneMediaAudioRequestCallback()`](packages/services/Car/service/src/com/android/car/audio/MediaRequestHandler.java)允许PrimaryZone注册回调，当后排乘客请求媒体播放时，通过回调通知主驾用户进行授权决策。
 
 **典型场景**：后排儿童想看电影→请求路由到主驾Zone→主驾用户通过UI授权→媒体音频路由到主驾扬声器。
 
@@ -687,7 +687,7 @@ flowchart TB
 
 ### 模块职责
 
-[`CoreAudioHelper`](packages/services/Car/service/src/com/android/car/audio/CoreAudioHelper.java:32)是AAOS与Android Core Audio框架的桥接层，将`AudioProductStrategy`和`AudioVolumeGroup`映射到AAOS的`CarAudioContext`体系。
+[`CoreAudioHelper`](packages/services/Car/service/src/com/android/car/audio/CoreAudioHelper.java)是AAOS与Android Core Audio框架的桥接层，将`AudioProductStrategy`和`AudioVolumeGroup`映射到AAOS的`CarAudioContext`体系。
 
 ### 桥接架构
 
@@ -714,7 +714,7 @@ graph TB
 
 ### StaticLazyInitializer懒加载
 
-[`StaticLazyInitializer`](packages/services/Car/service/src/com/android/car/audio/CoreAudioHelper.java:48)使用静态懒加载模式，在首次访问时通过`AudioManager.getAudioProductStrategies()`和`AudioManager.getAudioVolumeGroups()`获取系统级路由信息：
+[`StaticLazyInitializer`](packages/services/Car/service/src/com/android/car/audio/CoreAudioHelper.java)使用静态懒加载模式，在首次访问时通过`AudioManager.getAudioProductStrategies()`和`AudioManager.getAudioVolumeGroups()`获取系统级路由信息：
 
 ```mermaid
 sequenceDiagram
@@ -744,7 +744,7 @@ sequenceDiagram
 
 ### 模块职责
 
-[`CarAudioZonesHelper`](packages/services/Car/service/src/com/android/car/audio/CarAudioZonesHelper.java:46)负责从`car_audio_configuration.xml`解析完整的AAOS音频配置，构建`CarAudioZone`列表、`CarVolumeGroup`列表和设备映射关系。
+[`CarAudioZonesHelper`](packages/services/Car/service/src/com/android/car/audio/CarAudioZonesHelper.java)负责从`car_audio_configuration.xml`解析完整的AAOS音频配置，构建`CarAudioZone`列表、`CarVolumeGroup`列表和设备映射关系。
 
 ### XML解析完整流程
 

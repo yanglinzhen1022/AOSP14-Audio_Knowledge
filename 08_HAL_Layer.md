@@ -43,7 +43,7 @@ graph TB
 | 扩展性 | 需要新版本接口 | 稳定API+扩展 |
 | 状态 | 维护模式 | **推荐** |
 
-### AIDL HAL核心接口 — [`IModule`](hardware/interfaces/audio/aidl/android/hardware/audio/core/IModule.aidl:61)
+### AIDL HAL核心接口 — [`IModule`](hardware/interfaces/audio/aidl/android/hardware/audio/core/IModule.aidl)
 
 IModule是AIDL Audio HAL的入口，代表一个音频模块。一个设备可以有多个Module(primary/a2dp/usb等)。
 
@@ -311,7 +311,7 @@ HIDL HAL通过键值对传递非标准参数：
 
 ## 8.7 AudioGain — HAL增益控制模型
 
-[`audio_gain`](system/media/audio/include/system/audio.h:551)描述AudioPort上的硬件增益能力，是Volume全栈的硬件层基础。
+[`audio_gain`](system/media/audio/include/system/audio.h)描述AudioPort上的硬件增益能力，是Volume全栈的硬件层基础。
 
 ### 8.7.1 Gain模式
 

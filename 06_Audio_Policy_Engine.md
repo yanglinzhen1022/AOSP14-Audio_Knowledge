@@ -41,7 +41,7 @@ classDiagram
     SwAudioOutputDescriptor --> IOProfile
 ```
 
-### 核心路由决策（[`getOutputForAttrInt()`](frameworks/av/services/audiopolicy/managerdefault/AudioPolicyManager.cpp:1147)）
+### 核心路由决策（[`getOutputForAttrInt()`](frameworks/av/services/audiopolicy/managerdefault/AudioPolicyManager.cpp)）
 
 ```mermaid
 flowchart TB
@@ -78,25 +78,25 @@ flowchart TB
 
 ### getOutputForAttrInt()路由决策5步详解
 
-**步骤1: AudioAttributes解析** — [`getAudioAttributes()`](frameworks/av/services/audiopolicy/managerdefault/AudioPolicyManager.cpp:1172)
+**步骤1: AudioAttributes解析** — [`getAudioAttributes()`](frameworks/av/services/audiopolicy/managerdefault/AudioPolicyManager.cpp)
 - 将传入的attr/stream转换为统一的audio_attributes_t
 - 合入`mAllowedCapturePolicies`中的隐私flag(如FLAG_CAPTURE_PRIVATE)
 
-**步骤2: StreamType映射** — [`mEngine->getStreamTypeForAttributes()`](frameworks/av/services/audiopolicy/managerdefault/AudioPolicyManager.cpp:1179)
+**步骤2: StreamType映射** — [`mEngine->getStreamTypeForAttributes()`](frameworks/av/services/audiopolicy/managerdefault/AudioPolicyManager.cpp)
 - AudioAttributes → StreamType(兼容旧API)
 - 如`usage=MEDIA` → `STREAM_MUSIC`
 
-**步骤3: 动态策略匹配** — [`mPolicyMixes.getOutputForAttr()`](frameworks/av/services/audiopolicy/managerdefault/AudioPolicyManager.cpp:1194)
+**步骤3: 动态策略匹配** — [`mPolicyMixes.getOutputForAttr()`](frameworks/av/services/audiopolicy/managerdefault/AudioPolicyManager.cpp)
 - 检查是否有匹配的DynamicPolicy(如投影/远程录制)
 - 如果找到，使用PolicyMix关联的输出
 - `RENDER`策略: 直接独占输出(如Cast)
 - `USE_PRIMARY`策略: 走主输出
 
-**步骤4: Engine路由决策** — [`mEngine->getOutputDevicesForAttributes()`](frameworks/av/services/audiopolicy/managerdefault/AudioPolicyManager.cpp:1256)
+**步骤4: Engine路由决策** — [`mEngine->getOutputDevicesForAttributes()`](frameworks/av/services/audiopolicy/managerdefault/AudioPolicyManager.cpp)
 - 这是**核心路由决策**：AudioAttributes → ProductStrategy → 设备选择
 - 考虑因素：可用设备集合、ForceUse、电话模式、设备优先级
 
-**步骤5: 输出匹配与创建** — [`getOutputForDevices()`](frameworks/av/services/audiopolicy/managerdefault/AudioPolicyManager.cpp:1305)
+**步骤5: 输出匹配与创建** — [`getOutputForDevices()`](frameworks/av/services/audiopolicy/managerdefault/AudioPolicyManager.cpp)
 - 在已有输出中查找匹配的：format/sampleRate/channelMask/flags
 - 如果找不到 → `openOutput()`创建新PlaybackThread
 - 特殊处理: MSD路径/PreferredMixerAttributes/BitPerfect/INCALL_MUSIC
@@ -106,7 +106,7 @@ flowchart TB
 ## 6.3 EngineBase — 可插拔策略引擎
 
 ### 模块职责
-[`EngineBase`](frameworks/av/services/audiopolicy/engine/common/include/EngineBase.h:28)是音频策略引擎的基类，Vendor可以继承实现自定义路由引擎。
+[`EngineBase`](frameworks/av/services/audiopolicy/engine/common/include/EngineBase.h)是音频策略引擎的基类，Vendor可以继承实现自定义路由引擎。
 
 ### 核心接口方法
 
@@ -143,7 +143,7 @@ flowchart TB
     end
 ```
 
-策略排序（[`getOrderedProductStrategies()`](frameworks/av/services/audiopolicy/engine/common/include/EngineBase.h:66)）：
+策略排序（[`getOrderedProductStrategies()`](frameworks/av/services/audiopolicy/engine/common/include/EngineBase.h)）：
 ```
 策略优先级（从高到低）:
 1. strategy_emergency  → 紧急报警(强制Speaker最大音量)
@@ -201,7 +201,7 @@ graph TB
 
 ## 6.4 Device Routing — 设备路由
 
-### 设备连接处理（[`setDeviceConnectionStateInt()`](frameworks/av/services/audiopolicy/managerdefault/AudioPolicyManager.cpp:175)）
+### 设备连接处理（[`setDeviceConnectionStateInt()`](frameworks/av/services/audiopolicy/managerdefault/AudioPolicyManager.cpp)）
 
 ```mermaid
 sequenceDiagram
@@ -330,7 +330,7 @@ flowchart TB
 
 ## 6.8 AudioPolicyMix — 动态策略路由
 
-[`AudioPolicyMix`](frameworks/av/services/audiopolicy/common/managerdefinitions/include/AudioPolicyMix.h:35)继承AudioMix，允许App注册自定义路由规则，实现投屏、远程录制、多输出分流等场景。
+[`AudioPolicyMix`](frameworks/av/services/audiopolicy/common/managerdefinitions/include/AudioPolicyMix.h)继承AudioMix，允许App注册自定义路由规则，实现投屏、远程录制、多输出分流等场景。
 
 ### 6.8.1 AudioMix类型与路由模式
 
@@ -373,7 +373,7 @@ sequenceDiagram
 
 ### 6.8.3 动态策略匹配 — getOutputForAttr()
 
-在[`getOutputForAttrInt()`](frameworks/av/services/audiopolicy/managerdefault/AudioPolicyManager.cpp:1158)的第3步中：
+在[`getOutputForAttrInt()`](frameworks/av/services/audiopolicy/managerdefault/AudioPolicyManager.cpp)的第3步中：
 
 ```mermaid
 flowchart TB
@@ -389,7 +389,7 @@ flowchart TB
 
 ### 6.8.4 AudioMix匹配规则
 
-[`AudioPolicyMixCollection.mixMatch()`](frameworks/av/services/audiopolicy/common/managerdefinitions/src/AudioPolicyMix.cpp:345)匹配规则：
+[`AudioPolicyMixCollection.mixMatch()`](frameworks/av/services/audiopolicy/common/managerdefinitions/src/AudioPolicyMix.cpp)匹配规则：
 
 | 规则维度 | 说明 |
 |----------|------|
@@ -417,7 +417,7 @@ flowchart TB
 
 ### 模块职责
 
-[`EngineInterface`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h:49)是策略引擎的纯虚接口类，定义了策略引擎与AudioPolicyManager之间的完整契约。所有策略引擎实现（EngineDefault/EngineConfigurable）必须实现此接口。
+[`EngineInterface`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h)是策略引擎的纯虚接口类，定义了策略引擎与AudioPolicyManager之间的完整契约。所有策略引擎实现（EngineDefault/EngineConfigurable）必须实现此接口。
 
 ### 核心类图
 
@@ -475,16 +475,16 @@ classDiagram
 
 | 方法分类 | 方法 | 说明 |
 |----------|------|------|
-| **初始化** | [`loadFromXmlConfigWithFallback()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h:61) | 加载XML策略配置，失败时Fallback到默认配置 |
-| **初始化** | [`initCheck()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h:69) | 检查引擎是否正确初始化 |
-| **Observer** | [`setObserver()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h:76) | 设置APM观察者，让Engine获取设备/HwModule信息 |
-| **状态管理** | [`setPhoneState()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h:84) / [`setForceUse()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h:96) | 设置电话模式/强制路由 |
-| **路由决策** | [`getOutputDevicesForAttributes()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h:133) | 核心路由方法：AudioAttributes→输出设备 |
-| **路由决策** | [`getInputDeviceForAttributes()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h:166) | 输入路由：AudioAttributes→输入设备 |
-| **策略映射** | [`getProductStrategyForAttributes()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h:114) | AudioAttributes→ProductStrategy映射 |
-| **音量管理** | [`getVolumeGroupForAttributes()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h:234) | AudioAttributes→VolumeGroup映射 |
-| **设备角色** | [`setDevicesRoleForStrategy()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h:264) | 设置策略的设备角色(PREFERRED/DISABLED) |
-| **缓存管理** | [`updateDeviceSelectionCache()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h:218) / [`initializeDeviceSelectionCache()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h:310) | 设备选择缓存更新/初始化 |
+| **初始化** | [`loadFromXmlConfigWithFallback()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h) | 加载XML策略配置，失败时Fallback到默认配置 |
+| **初始化** | [`initCheck()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h) | 检查引擎是否正确初始化 |
+| **Observer** | [`setObserver()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h) | 设置APM观察者，让Engine获取设备/HwModule信息 |
+| **状态管理** | [`setPhoneState()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h) / [`setForceUse()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h) | 设置电话模式/强制路由 |
+| **路由决策** | [`getOutputDevicesForAttributes()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h) | 核心路由方法：AudioAttributes→输出设备 |
+| **路由决策** | [`getInputDeviceForAttributes()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h) | 输入路由：AudioAttributes→输入设备 |
+| **策略映射** | [`getProductStrategyForAttributes()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h) | AudioAttributes→ProductStrategy映射 |
+| **音量管理** | [`getVolumeGroupForAttributes()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h) | AudioAttributes→VolumeGroup映射 |
+| **设备角色** | [`setDevicesRoleForStrategy()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h) | 设置策略的设备角色(PREFERRED/DISABLED) |
+| **缓存管理** | [`updateDeviceSelectionCache()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h) / [`initializeDeviceSelectionCache()`](frameworks/av/services/audiopolicy/engine/interface/EngineInterface.h) | 设备选择缓存更新/初始化 |
 
 ### 类型定义
 
@@ -501,7 +501,7 @@ using CapturePresetDevicesRoleMap =
 Engine通过C风格工厂函数创建，实现编译时切换：
 
 ```cpp
-// EngineInterface.h:460
+// EngineInterface.h
 extern "C" EngineInterface* createEngineInstance();
 extern "C" void destroyEngineInstance(EngineInterface *engine);
 ```
@@ -517,7 +517,7 @@ extern "C" void destroyEngineInstance(EngineInterface *engine);
 
 ### 模块职责
 
-[`Engine`](frameworks/av/services/audiopolicy/engineconfigurable/src/Engine.h:37)（EngineConfigurable）是基于Parameter Framework（PFW）的可插拔策略引擎实现，继承[`EngineBase`](frameworks/av/services/audiopolicy/engine/common/include/EngineBase.h:28)并实现[`AudioPolicyPluginInterface`](frameworks/av/services/audiopolicy/engineconfigurable/interface/AudioPolicyPluginInterface.h)。与EngineDefault的硬编码策略不同，EngineConfigurable通过PFW规则文件（.pfw）定义路由策略。
+[`Engine`](frameworks/av/services/audiopolicy/engineconfigurable/src/Engine.h)（EngineConfigurable）是基于Parameter Framework（PFW）的可插拔策略引擎实现，继承[`EngineBase`](frameworks/av/services/audiopolicy/engine/common/include/EngineBase.h)并实现[`AudioPolicyPluginInterface`](frameworks/av/services/audiopolicy/engineconfigurable/interface/AudioPolicyPluginInterface.h)。与EngineDefault的硬编码策略不同，EngineConfigurable通过PFW规则文件（.pfw）定义路由策略。
 
 ### 架构关系
 
@@ -527,21 +527,21 @@ flowchart TB
         APM[AudioPolicyManager]
     end
     subgraph "EngineConfigurable"
-        EB[EngineBase<br>策略映射+音量组]
-        ENG[Engine<br>路由决策+PFW交互]
-        PMW[ParameterManagerWrapper<br>PFW C++ API封装]
+        EB["EngineBase<br>策略映射+音量组"]
+        ENG["Engine<br>路由决策+PFW交互"]
+        PMW["ParameterManagerWrapper<br>PFW C++ API封装"]
     end
     subgraph "Parameter Framework"
-        PFWC[PFW Core<br>规则引擎]
-        PS[PolicySubsystem<br>策略子系统]
-        PSPlugin[ProductStrategy Plugin<br>流类型→设备映射]
-        ISPlugin[InputSource Plugin<br>录音源→设备映射]
-        STPlugin[Stream Plugin<br>音量配置切换]
+        PFWC["PFW Core<br>规则引擎"]
+        PS["PolicySubsystem<br>策略子系统"]
+        PSPlugin["ProductStrategy Plugin<br>流类型→设备映射"]
+        ISPlugin["InputSource Plugin<br>录音源→设备映射"]
+        STPlugin["Stream Plugin<br>音量配置切换"]
     end
     subgraph "PFW配置文件"
-        PFWXML[PolicySubsystem.xml<br>子系统结构定义]
-        PFWPFW[device_for_product_strategy_media.pfw<br>路由规则文件]
-        PFWDOM[PolicyConfigurableDomains.xml<br>域配置]
+        PFWXML["PolicySubsystem.xml<br>子系统结构定义"]
+        PFWPFW["device_for_product_strategy_media.pfw<br>路由规则文件"]
+        PFWDOM["PolicyConfigurableDomains.xml<br>域配置"]
     end
     APM -->|EngineInterface| ENG
     ENG --> EB
@@ -708,7 +708,7 @@ flowchart TB
 当XML配置文件不存在或解析失败时，引擎使用[`EngineDefaultConfig.h`](frameworks/av/services/audiopolicy/engine/common/include/EngineDefaultConfig.h)中的硬编码默认配置：
 
 ```cpp
-// EngineBase.cpp:169
+// EngineBase.cpp
 if (result.parsedConfig == nullptr) {
     ALOGD("No configuration found, using default matching phone experience.");
     engineConfig::Config config = gDefaultEngineConfig;  // 硬编码默认
@@ -747,7 +747,7 @@ EngineConfig使用模板化的Trait模式实现XML反序列化：
 
 ### 模块职责
 
-[`VolumeCurve`](frameworks/av/services/audiopolicy/engine/common/include/VolumeCurve.h:52)实现音量索引到分贝值的映射曲线，支持按设备类别区分不同的衰减特性。
+[`VolumeCurve`](frameworks/av/services/audiopolicy/engine/common/include/VolumeCurve.h)实现音量索引到分贝值的映射曲线，支持按设备类别区分不同的衰减特性。
 
 ### 类关系
 
@@ -790,7 +790,7 @@ classDiagram
 
 ### volIndexToDb()插值算法
 
-[`VolumeCurve::volIndexToDb()`](frameworks/av/services/audiopolicy/engine/common/src/VolumeCurve.cpp:30)将UI音量索引转换为dB值，使用线性插值：
+[`VolumeCurve::volIndexToDb()`](frameworks/av/services/audiopolicy/engine/common/src/VolumeCurve.cpp)将UI音量索引转换为dB值，使用线性插值：
 
 ```mermaid
 flowchart TB
@@ -837,7 +837,7 @@ CurvePoint由两个值组成：
 
 ### VolumeCurves的曲线切换
 
-[`VolumeCurves`](frameworks/av/services/audiopolicy/engine/common/include/VolumeCurve.h:71)支持运行时切换音量曲线：
+[`VolumeCurves`](frameworks/av/services/audiopolicy/engine/common/include/VolumeCurve.h)支持运行时切换音量曲线：
 
 ```cpp
 // 进入通话时：DTMF使用VOICE_CALL的音量曲线
@@ -857,7 +857,7 @@ restoreOriginVolumeCurve(AUDIO_STREAM_DTMF);
 
 ### 模块职责
 
-[`LastRemovableMediaDevices`](frameworks/av/services/audiopolicy/engine/common/include/LastRemovableMediaDevices.h:33)追踪最后连接的可移除媒体设备（蓝牙/有线耳机/USB），在设备拔出且无其他可用设备时提供回退目标。这直接决定了"拔出耳机后音频切回Speaker"的行为。
+[`LastRemovableMediaDevices`](frameworks/av/services/audiopolicy/engine/common/include/LastRemovableMediaDevices.h)追踪最后连接的可移除媒体设备（蓝牙/有线耳机/USB），在设备拔出且无其他可用设备时提供回退目标。这直接决定了"拔出耳机后音频切回Speaker"的行为。
 
 ### 设备分组
 
@@ -888,7 +888,7 @@ flowchart TB
 
 ### 设备追踪逻辑
 
-[`setRemovableMediaDevices()`](frameworks/av/services/audiopolicy/engine/common/src/LastRemovableMediaDevices.cpp:25)使用FIFO（先进先出）策略维护设备列表：
+[`setRemovableMediaDevices()`](frameworks/av/services/audiopolicy/engine/common/src/LastRemovableMediaDevices.cpp)使用FIFO（先进先出）策略维护设备列表：
 
 ```mermaid
 sequenceDiagram
@@ -913,10 +913,10 @@ sequenceDiagram
 
 ### 设备选择中的应用
 
-在[`EngineBase::setDeviceConnectionState()`](frameworks/av/services/audiopolicy/engine/common/src/EngineBase.cpp:70)中，每次设备连接/断开时更新追踪：
+在[`EngineBase::setDeviceConnectionState()`](frameworks/av/services/audiopolicy/engine/common/src/EngineBase.cpp)中，每次设备连接/断开时更新追踪：
 
 ```cpp
-// EngineBase.cpp:70
+// EngineBase.cpp
 status_t EngineBase::setDeviceConnectionState(const sp<DeviceDescriptor> devDesc,
                                               audio_policy_dev_state_t state) {
     audio_devices_t deviceType = devDesc->type();
@@ -933,7 +933,7 @@ status_t EngineBase::setDeviceConnectionState(const sp<DeviceDescriptor> devDesc
 
 ### getLastRemovableMediaDevice()
 
-[`getLastRemovableMediaDevice()`](frameworks/av/services/audiopolicy/engine/common/src/LastRemovableMediaDevices.cpp:61)返回最后连接的可移除设备，支持按组和排除列表过滤：
+[`getLastRemovableMediaDevice()`](frameworks/av/services/audiopolicy/engine/common/src/LastRemovableMediaDevices.cpp)返回最后连接的可移除设备，支持按组和排除列表过滤：
 
 ```cpp
 // 参数:
@@ -953,7 +953,7 @@ sp<DeviceDescriptor> getLastRemovableMediaDevice(
 
 ### 模块职责
 
-[`AudioPolicyManagerObserver`](frameworks/av/services/audiopolicy/engine/interface/AudioPolicyManagerObserver.h:37)是Engine获取AudioPolicyManager状态的统一接口，采用Observer模式解耦Engine与APM的直接依赖。
+[`AudioPolicyManagerObserver`](frameworks/av/services/audiopolicy/engine/interface/AudioPolicyManagerObserver.h)是Engine获取AudioPolicyManager状态的统一接口，采用Observer模式解耦Engine与APM的直接依赖。
 
 ### 接口方法
 

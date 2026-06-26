@@ -1,6 +1,6 @@
 # 第十四篇：Bluetooth Audio 深度解析
 
-> [← 上一篇：Volume & Device](13_Volume_Device_Deep_Dive.md) | [返回导航](README.md) | [下一篇：PAL Architecture →](16_PAL_Architecture.md)
+> [← 上一篇：Volume & Device](13_Volume_Device_Deep_Dive.md) | [返回导航](README.md) | [下一篇：PAL Architecture →](15_PAL_Architecture.md)
 
 ---
 
@@ -96,8 +96,8 @@ flowchart TB
 ```
 
 **关键源码位置**:
-- [`AudioDeviceBroker.postSetAvrcpAbsoluteVolumeIndex()`](frameworks/base/services/core/java/com/android/server/audio/AudioDeviceBroker.java:1088): AVRCP音量发送
-- [`AudioService`](frameworks/base/services/core/java/com/android/server/audio/AudioService.java:4516): A2DP音量路由判断
+- [`AudioDeviceBroker.postSetAvrcpAbsoluteVolumeIndex()`](frameworks/base/services/core/java/com/android/server/audio/AudioDeviceBroker.java): AVRCP音量发送
+- [`AudioService`](frameworks/base/services/core/java/com/android/server/audio/AudioService.java): A2DP音量路由判断
 
 ### 14.2.3 A2DP Codec协商
 
@@ -158,8 +158,8 @@ flowchart TB
 ```
 
 **关键源码位置**:
-- [`AudioDeviceBroker.setA2dpSuspended()`](frameworks/base/services/core/java/com/android/server/audio/AudioDeviceBroker.java:1004): A2DP挂起控制
-- [`AudioService.setA2dpSuspended()`](frameworks/base/services/core/java/com/android/server/audio/AudioService.java:6416): 公共API
+- [`AudioDeviceBroker.setA2dpSuspended()`](frameworks/base/services/core/java/com/android/server/audio/AudioDeviceBroker.java): A2DP挂起控制
+- [`AudioService.setA2dpSuspended()`](frameworks/base/services/core/java/com/android/server/audio/AudioService.java): 公共API
 
 ## 14.3 LE Audio — 低功耗蓝牙音频
 
@@ -229,7 +229,7 @@ flowchart TB
 ```
 
 **关键源码位置**:
-- [`AudioDeviceBroker.postSetLeAudioVolumeIndex()`](frameworks/base/services/core/java/com/android/server/audio/AudioDeviceBroker.java:1096): LE Audio音量发送
+- [`AudioDeviceBroker.postSetLeAudioVolumeIndex()`](frameworks/base/services/core/java/com/android/server/audio/AudioDeviceBroker.java): LE Audio音量发送
 - [`BtHelper.setLeAudioVolume()`](frameworks/base/services/core/java/com/android/server/audio/BtHelper.java): VCP音量设置
 
 ### 14.3.4 LE Audio Suspend机制
@@ -246,7 +246,7 @@ flowchart TB
     LE_RESUME --> BROKER2["AudioDeviceBroker.setLeAudioSuspended（）"]
 ```
 
-**关键源码位置**: [`AudioDeviceBroker.setLeAudioSuspended()`](frameworks/base/services/core/java/com/android/server/audio/AudioDeviceBroker.java:1034)
+**关键源码位置**: [`AudioDeviceBroker.setLeAudioSuspended()`](frameworks/base/services/core/java/com/android/server/audio/AudioDeviceBroker.java)
 
 ### 14.3.5 LE Audio Offload
 
@@ -384,7 +384,7 @@ flowchart TB
     PROFILE -->|"LE_AUDIO_BROADCAST"| LEA_BC["audioDevice=DEVICE_OUT_BLE_BROADCAST"]
 ```
 
-**关键源码位置**: [`AudioDeviceBroker.createBtDeviceInfo()`](frameworks/base/services/core/java/com/android/server/audio/AudioDeviceBroker.java:812)
+**关键源码位置**: [`AudioDeviceBroker.createBtDeviceInfo()`](frameworks/base/services/core/java/com/android/server/audio/AudioDeviceBroker.java)
 
 ### 14.6.2 蓝牙设备切换流程
 
@@ -484,7 +484,7 @@ flowchart LR
 
 **PACS** 与BAP协同：PACS通过GATT发布设备Codec/Sink/Source能力，Client读取PACS后选择合适配置发起ASE Codec Config Request。
 
-源码：[`LeAudioService.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/le_audio/LeAudioService.java:1) 管理ASE创建和状态转换；[`LeAudioNativeInterface.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/le_audio/LeAudioNativeInterface.java:1) 对接BAP栈回调。
+源码：[`LeAudioService.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/le_audio/LeAudioService.java) 管理ASE创建和状态转换；[`LeAudioNativeInterface.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/le_audio/LeAudioNativeInterface.java) 对接BAP栈回调。
 
 ### 14.7.2 CAP (Common Audio Profile)
 
@@ -529,7 +529,7 @@ flowchart TB
     CSIP_SRV["CsipSetCoordinatorService.java"] --> CSIP_SM["CsipSetCoordinatorStateMachine.java"]
 
 
-源码：[`CsipSetCoordinatorService.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/csip/CsipSetCoordinatorService.java:1)；[`CsipSetCoordinatorStateMachine.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/csip/CsipSetCoordinatorStateMachine.java:1)。
+源码：[`CsipSetCoordinatorService.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/csip/CsipSetCoordinatorService.java)；[`CsipSetCoordinatorStateMachine.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/csip/CsipSetCoordinatorStateMachine.java)。
 
 ```
 
@@ -565,11 +565,11 @@ flowchart TB
     VICS->>PHONE: 通知Volume_Changed
 ```
 
-VCP音量同步链路：手机写入VCS Volume_Setting(0-255) → GATT写入 → 耳机调整增益 → VICS上报Volume_Changed → [`VolumeControlService.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/vc/VolumeControlService.java:1) 回调 → AudioPolicyManager更新音量。
+VCP音量同步链路：手机写入VCS Volume_Setting(0-255) → GATT写入 → 耳机调整增益 → VICS上报Volume_Changed → [`VolumeControlService.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/vc/VolumeControlService.java) 回调 → AudioPolicyManager更新音量。
 
 ## 14.8 LC3编码参数与配置
 
-> 源码路径: [`packages/modules/Bluetooth/android/app/src/com/android/bluetooth/le_audio/LeAudioCodecConfig.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/le_audio/LeAudioCodecConfig.java:1)
+> 源码路径: [`packages/modules/Bluetooth/android/app/src/com/android/bluetooth/le_audio/LeAudioCodecConfig.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/le_audio/LeAudioCodecConfig.java)
 
 LC3 (Low Complexity Communications Codec) 是LE Audio的强制编解码器。
 
@@ -617,11 +617,11 @@ sequenceDiagram
     Note over Phone,Ear: LC3音频流传输
 ```
 
-配置协商与ASE状态机联动：Codec Config协商LC3参数 → QoS Config协商CIS参数(SDU/PHY/RTN) → Enable激活CIS → Streaming开始传输。[`LeAudioCodecConfig.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/le_audio/LeAudioCodecConfig.java:1) 处理LTV格式Codec Capabilities的解析和构建。
+配置协商与ASE状态机联动：Codec Config协商LC3参数 → QoS Config协商CIS参数(SDU/PHY/RTN) → Enable激活CIS → Streaming开始传输。[`LeAudioCodecConfig.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/le_audio/LeAudioCodecConfig.java) 处理LTV格式Codec Capabilities的解析和构建。
 
 ## 14.9 LE Audio广播音频(Broadcast Audio)
 
-> 码路径: [`packages/modules/Bluetooth/android/app/src/com/android/bluetooth/le_audio/LeAudioBroadcasterNativeInterface.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/le_audio/LeAudioBroadcasterNativeInterface.java:1)
+> 码路径: [`packages/modules/Bluetooth/android/app/src/com/android/bluetooth/le_audio/LeAudioBroadcasterNativeInterface.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/le_audio/LeAudioBroadcasterNativeInterface.java)
 
 LE Audio广播音频允许一个源设备同时向多个接收设备发送音频流，无需配对连接。
 
@@ -643,7 +643,7 @@ flowchart TB
 
 **BASS** 是广播发现机制：Source通过Periodic Adv发布BASE信息(Codec/BIS索引)，Scan Delegator通过BASS Client添加Source，Broadcast Code提供加密保护。
 
-源码：[`LeAudioBroadcasterNativeInterface.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/le_audio/LeAudioBroadcasterNativeInterface.java:1)；[`BassClientService.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/bass_client/BassClientService.java:1)(72KB)；[`BassClientStateMachine.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/bass_client/BassClientStateMachine.java:1)(91KB)。
+源码：[`LeAudioBroadcasterNativeInterface.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/le_audio/LeAudioBroadcasterNativeInterface.java)；[`BassClientService.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/bass_client/BassClientService.java)(72KB)；[`BassClientStateMachine.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/bass_client/BassClientStateMachine.java)(91KB)。
 
 ### 14.9.2 Broadcast ISOB (Isochronous Broadcast Group)
 
@@ -695,7 +695,7 @@ flowchart TB
     APS --> PRIORITY
 ```
 
-**BtHelper双模管理逻辑**（参考 [`ActiveDeviceManager.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/btservice/ActiveDeviceManager.java:1)）：
+**BtHelper双模管理逻辑**（参考 [`ActiveDeviceManager.java`](packages/modules/Bluetooth/android/app/src/com/android/bluetooth/btservice/ActiveDeviceManager.java)）：
 1. 设备同时支持A2DP和LE Audio → 优先使用LE Audio
 2. LE Audio连接失败/断开 → 自动回退到A2DP
 3. LE Audio重连成功 → 从A2DP切换回LE Audio
@@ -745,4 +745,4 @@ dumpsys bluetooth_manager | grep "volume_setting"
 
 ---
 
-> [← 上一篇：Volume & Device](13_Volume_Device_Deep_Dive.md) | [返回导航](README.md) | [下一篇：PAL Architecture →](16_PAL_Architecture.md)
+> [← 上一篇：Volume & Device](13_Volume_Device_Deep_Dive.md) | [返回导航](README.md) | [下一篇：PAL Architecture →](15_PAL_Architecture.md)
